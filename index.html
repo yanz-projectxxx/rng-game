@@ -559,6 +559,7 @@ function enterGame(d){
   document.getElementById('gamePage').style.display='block';
   refreshStats();refreshUpg();loadLB();updateOwnerUI();cacheLocal();
   subscribeChat();
+  startAutoRefresh();
 }
 
 async function doLogout(){
@@ -570,6 +571,7 @@ async function doLogout(){
   G={tokens:0,spins:0,rares:0,bestBlock:null,autoOn:false,autoIv:null,
      upg:{fastRoll:0,doubleRoll:0,luckRoll:0},isOwner:false,ownerLuckOn:false,betaLuckMult:0,redeemedCodes:[]};
   stopAllAuras();
+  stopAutoRefresh();
   document.getElementById('slotsArea').innerHTML='';
   document.getElementById('chatMsgs').innerHTML='';
   document.getElementById('ownerPanel').style.display='none';
@@ -930,6 +932,39 @@ async function loadLB(){
   });
 }
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// AUTO REFRESH — setiap 60 detik, tanpa loading flash, tanpa reset data
+async function silentLoadLB(){
+  const{data,error}=await sb.from('players')
+    .select('username,best_block,best_score,spins').order('best_score',{ascending:false}).limit(5);
+  if(error||!data?.length)return;
+  const c=document.getElementById('lbCont');
+  c.innerHTML='';
+  data.forEach((row,i)=>{
+    const r=row.best_block?.rarity,b=row.best_block?.block;
+    const col=RCOLS[r?.id]||'#9090b0';
+    const d=document.createElement('div');d.className='lbrow';
+    d.innerHTML=`<div class="lbrank">${MEDALS[i]||i+1}</div>
+      <div class="lbname">${esc(row.username||'?')}</div>
+      <div class="lbblock" style="background:${col}18;color:${col};border:1px solid ${col}28">
+        ${b?.i||''} ${esc(b?.n||'\u2014')} · ${esc(r?.name||'\u2014')}
+      </div>
+      <div class="lbspin">\uD83D\uDD04${Number(row.spins||0).toLocaleString()}</div>
+      <div class="lbsc">${(row.best_score||0).toLocaleString()}</div>`;
+    c.appendChild(d);
+  });
+}
+
+let autoRefIv=null;
+function startAutoRefresh(){
+  if(autoRefIv)clearInterval(autoRefIv);
+  autoRefIv=setInterval(()=>{
+    if(!CU)return;
+    silentLoadLB();
+    refreshUpg();
+  },60000);
+}
+function stopAutoRefresh(){clearInterval(autoRefIv);autoRefIv=null;}
 </script>
 </body>
 </html>
