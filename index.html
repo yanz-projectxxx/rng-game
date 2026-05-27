@@ -14,11 +14,9 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh}
 
-/* ── AUTH ── */
-#authPage{min-height:100vh;display:flex;align-items:center;justify-content:center;
-  background:radial-gradient(ellipse at 50% -10%,#1c1050,var(--bg) 65%)}
-.abox{background:var(--card);border:1px solid var(--bd);border-radius:22px;
-  padding:40px 36px;width:360px;box-shadow:0 0 90px #7c6dfa16}
+/* AUTH */
+#authPage{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% -10%,#1c1050,var(--bg) 65%)}
+.abox{background:var(--card);border:1px solid var(--bd);border-radius:22px;padding:40px 36px;width:360px;box-shadow:0 0 90px #7c6dfa16}
 .alogo{text-align:center;font-size:46px;margin-bottom:4px}
 .atitle{text-align:center;font-size:22px;font-weight:700;margin-bottom:2px}
 .asub{text-align:center;font-size:12px;color:var(--muted);margin-bottom:26px}
@@ -35,93 +33,100 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
 .amsg{margin-top:11px;font-size:12px;text-align:center;min-height:16px}
 .amsg.err{color:var(--err)}.amsg.ok{color:var(--ok)}
 
-/* ── GAME ── */
+/* GAME */
 #gamePage{display:none;max-width:970px;margin:0 auto;padding:12px}
-.nav{display:flex;justify-content:space-between;align-items:center;
-  padding:9px 15px;background:var(--card);border-radius:12px;border:1px solid var(--bd);margin-bottom:10px;position:relative}
+
+/* CHAT BAR */
+#chatWrap{background:var(--card);border:1px solid var(--bd);border-radius:12px;margin-bottom:10px;overflow:hidden}
+#chatHead{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--bd);cursor:pointer;user-select:none}
+#chatHead span{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+#chatToggle{font-size:11px;color:var(--muted)}
+#chatBody{display:block}
+#chatMsgs{max-height:130px;overflow-y:auto;padding:8px 12px;display:flex;flex-direction:column;gap:4px;scroll-behavior:smooth}
+#chatMsgs:empty::after{content:'Belum ada pesan...';color:var(--muted);font-size:11px;font-style:italic}
+.cmsg{font-size:12px;line-height:1.4;padding:4px 9px;border-radius:7px;background:var(--bg2);animation:cmpop .2s ease-out}
+.cmsg .cw{font-weight:700;margin-right:5px}
+.cmsg.owner-msg{background:#1a0d00;border-left:3px solid var(--owner)}
+.cmsg.owner-msg .cw{color:var(--owner)}
+.cmsg.sys-msg{background:#0a0a18;border-left:3px solid var(--acc);font-style:italic;color:var(--muted)}
+#chatRow{display:flex;border-top:1px solid var(--bd)}
+#chatIn{flex:1;padding:8px 12px;background:transparent;border:none;color:var(--text);font-size:12px;outline:none}
+#chatSend{padding:8px 16px;background:var(--acc);border:none;color:#fff;font-size:12px;font-weight:600;cursor:pointer;transition:opacity .15s}
+#chatSend:hover{opacity:.85}
+@keyframes cmpop{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* NAV */
+.nav{display:flex;justify-content:space-between;align-items:center;padding:9px 15px;background:var(--card);border-radius:12px;border:1px solid var(--bd);margin-bottom:10px}
 .nlogo{font-size:16px;font-weight:700}
-.nright{display:flex;align-items:center;gap:10px}
+.nright{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .nuser{font-size:12px;color:var(--muted)}.nuser b{color:var(--acc2)}
-.nuser b.owner{color:var(--owner)}
-.sdot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--ok);margin-left:5px;animation:dp 2.5s infinite;vertical-align:middle}
+.nuser b.isowner{color:var(--owner)}
+.sdot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--ok);margin-left:4px;animation:dp 2.5s infinite;vertical-align:middle}
 @keyframes dp{0%,100%{opacity:1}50%{opacity:.15}}
 .lgbtn{padding:5px 12px;border-radius:7px;border:1px solid var(--bd);background:none;color:var(--muted);font-size:11px;cursor:pointer;transition:.2s}
 .lgbtn:hover{border-color:var(--err);color:var(--err)}
 
-/* ── REDEEM BUTTON (pojok kanan atas nav) ── */
-#redeemBtn{position:relative;background:linear-gradient(135deg,#2a1a00,#1a1000);border:1px solid var(--gold);
-  border-radius:9px;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:6px;
-  font-size:12px;font-weight:600;color:var(--gold);transition:.2s}
+/* REDEEM BTN */
+#redeemBtn{background:linear-gradient(135deg,#2a1a00,#1a1000);border:1px solid var(--gold);border-radius:9px;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--gold);transition:.2s;position:relative}
 #redeemBtn:hover{background:linear-gradient(135deg,#3d2800,#2a1800);box-shadow:0 0 14px #f4c43040}
-#redeemBtn .rn{font-size:16px}
-#redeemBtn .rbadge{position:absolute;top:-5px;right:-5px;background:var(--err);color:#fff;
-  font-size:9px;font-weight:700;border-radius:50%;width:16px;height:16px;
-  display:flex;align-items:center;justify-content:center}
+#redeemBtn .ricon{font-size:15px;animation:gbounce 2s infinite}
+@keyframes gbounce{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
 
-/* ── REDEEM MODAL ── */
-#redeemModal{display:none;position:fixed;inset:0;background:#00000088;z-index:999;
-  align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+/* REDEEM MODAL */
+#redeemModal{display:none;position:fixed;inset:0;background:#000000aa;z-index:999;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
 #redeemModal.open{display:flex}
-.rmodal{background:var(--card);border:1px solid var(--gold);border-radius:18px;
-  padding:28px 26px;width:340px;box-shadow:0 0 60px #f4c43022}
+.rmodal{background:var(--card);border:1px solid var(--gold);border-radius:18px;padding:28px 26px;width:340px;box-shadow:0 0 60px #f4c43022}
 .rmodal h3{font-size:17px;font-weight:700;color:var(--gold);margin-bottom:4px;text-align:center}
-.rmodal p{font-size:12px;color:var(--muted);text-align:center;margin-bottom:18px}
-.rmodal input{width:100%;padding:10px 13px;border-radius:9px;border:1px solid var(--bd);
-  background:var(--bg3);color:var(--text);font-size:14px;outline:none;margin-bottom:10px;
-  letter-spacing:.05em;transition:border .2s}
+.rmodal .rsub{font-size:12px;color:var(--muted);text-align:center;margin-bottom:18px}
+.rmodal input{width:100%;padding:10px 13px;border-radius:9px;border:1px solid var(--bd);background:var(--bg3);color:var(--text);font-size:14px;outline:none;margin-bottom:10px;letter-spacing:.05em;text-transform:uppercase;transition:border .2s}
 .rmodal input:focus{border-color:var(--gold)}
-.rmodal-btns{display:flex;gap:8px}
-.rbtn-cancel{flex:1;padding:10px;border-radius:9px;border:1px solid var(--bd);background:transparent;color:var(--muted);font-size:13px;cursor:pointer}
-.rbtn-ok{flex:2;padding:10px;border-radius:9px;border:none;background:var(--gold);color:#000;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s}
-.rbtn-ok:hover{opacity:.85}
+.rbtns{display:flex;gap:8px}
+.rbcancel{flex:1;padding:10px;border-radius:9px;border:1px solid var(--bd);background:transparent;color:var(--muted);font-size:13px;cursor:pointer}
+.rbok{flex:2;padding:10px;border-radius:9px;border:none;background:var(--gold);color:#000;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s}
+.rbok:hover{opacity:.85}
 .rmsg{font-size:12px;text-align:center;margin-bottom:10px;min-height:16px}
 .rmsg.ok{color:var(--ok)}.rmsg.err{color:var(--err)}
+.rhist{margin-top:12px;font-size:10px;color:var(--muted)}
 
-/* ── OWNER PANEL ── */
-#ownerPanel{display:none;background:linear-gradient(135deg,#100800,#180e00);
-  border:1px solid var(--owner);border-radius:14px;padding:14px;margin-bottom:10px}
-.owner-title{font-size:13px;font-weight:700;color:var(--owner);margin-bottom:12px;
-  display:flex;align-items:center;gap:8px}
-.owner-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-@media(max-width:560px){.owner-grid{grid-template-columns:1fr}}
+/* OWNER PANEL */
+#ownerPanel{display:none;background:linear-gradient(135deg,#100800,#180e00);border:1px solid var(--owner);border-radius:14px;padding:14px;margin-bottom:10px;animation:ownerglow 3s infinite}
+@keyframes ownerglow{0%,100%{border-color:var(--owner)}50%{border-color:#ffaa66;box-shadow:0 0 20px #ff6b3530}}
+.otitle{font-size:13px;font-weight:700;color:var(--owner);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.ogrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:560px){.ogrid{grid-template-columns:1fr}}
 .ocard{background:#1a0e00;border:1px solid #3a2500;border-radius:10px;padding:11px 13px}
 .ocard h5{font-size:11px;font-weight:600;color:var(--owner);margin-bottom:8px}
 .ocard label{font-size:10px;color:var(--muted);display:block;margin-bottom:4px}
-.ocard input{width:100%;padding:7px 9px;border-radius:7px;border:1px solid #3a2500;
-  background:#0f0800;color:var(--text);font-size:12px;outline:none;margin-bottom:6px;transition:border .2s}
-.ocard input:focus{border-color:var(--owner)}
-.obtn{padding:7px 14px;border-radius:7px;border:none;background:var(--owner);color:#fff;
-  font-size:12px;font-weight:600;cursor:pointer;transition:opacity .15s;width:100%;margin-top:2px}
+.ocard input,.ocard select{width:100%;padding:7px 9px;border-radius:7px;border:1px solid #3a2500;background:#0f0800;color:var(--text);font-size:12px;outline:none;margin-bottom:6px;transition:border .2s}
+.ocard input:focus,.ocard select:focus{border-color:var(--owner)}
+.ocard select option{background:#0f0800}
+.obtn{padding:7px 14px;border-radius:7px;border:none;background:var(--owner);color:#fff;font-size:12px;font-weight:600;cursor:pointer;transition:opacity .15s;width:100%;margin-top:2px}
 .obtn:hover{opacity:.82}
-.obtn.toggle{background:#1a1a2c;border:1px solid var(--bd);color:var(--muted)}
-.obtn.toggle.active{background:#1a0900;border-color:var(--owner);color:var(--owner)}
-.luck-indicator{display:flex;align-items:center;gap:8px;margin-top:6px;padding:7px 10px;
-  border-radius:7px;background:#0f0800;border:1px solid #3a2500;font-size:11px}
-.luck-dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
-.luck-dot.on{background:var(--gold);box-shadow:0 0 8px var(--gold)}
+.obtn.tog{background:#1a1a2c;border:1px solid var(--bd);color:var(--muted)}
+.obtn.tog.on{background:#1a0900;border-color:var(--owner);color:var(--owner)}
+.lindicator{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:7px 10px;border-radius:7px;background:#0f0800;border:1px solid #3a2500;font-size:11px}
+.ldot{width:8px;height:8px;border-radius:50%;background:var(--muted);transition:.3s}
+.ldot.on{background:var(--gold);box-shadow:0 0 8px var(--gold)}
 
-/* ── STATS ── */
+/* STATS */
 .stats{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px}
-.sc{flex:1;min-width:65px;background:var(--card);border-radius:9px;padding:9px 11px;border:1px solid var(--bd)}
+.sc{flex:1;min-width:65px;background:var(--card);border-radius:9px;padding:9px 11px;border:1px solid var(--bd);transition:.3s}
 .sc .sv{font-size:19px;font-weight:700}.sc .sk{font-size:9px;color:var(--muted);margin-top:1px}
-.sc.luck-active .sv{color:var(--gold);text-shadow:0 0 12px #f4c43088}
+.sc.lhigh{border-color:#f4c43060}.sc.lhigh .sv{color:var(--gold);text-shadow:0 0 10px #f4c43066}
+.sc.lmax{border-color:var(--owner);animation:luckmax 1.5s infinite}
+@keyframes luckmax{0%,100%{box-shadow:0 0 6px var(--owner)}50%{box-shadow:0 0 20px var(--owner),0 0 40px #ff6b3530}}
 
 .log{font-size:11px;color:var(--muted);min-height:15px;margin-bottom:9px;font-style:italic}
 .btnrow{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:11px}
-.gbtn{padding:8px 18px;border-radius:9px;border:1px solid var(--bd);background:var(--bg3);
-  font-size:13px;font-weight:600;cursor:pointer;color:var(--text);transition:.15s}
+.gbtn{padding:8px 18px;border-radius:9px;border:1px solid var(--bd);background:var(--bg3);font-size:13px;font-weight:600;cursor:pointer;color:var(--text);transition:.15s}
 .gbtn:hover{border-color:var(--acc)}
 .gbtn.aon{background:#0d3318;color:var(--ok);border-color:var(--ok)}
 .gbtn.pri{background:var(--acc);color:#fff;border-color:var(--acc)}
 .gbtn.pri:hover{opacity:.88}
 
-/* ── SLOTS ── */
-.slots{display:flex;gap:8px;flex-wrap:wrap;min-height:108px;align-items:center;
-  justify-content:center;margin-bottom:12px;padding:8px;border-radius:13px;
-  border:1px solid var(--bd);background:var(--bg2)}
-.slot{width:94px;height:94px;border-radius:13px;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;position:relative;overflow:hidden;
-  border:2px solid transparent;will-change:transform;transition:transform .18s}
+/* SLOTS */
+.slots{display:flex;gap:8px;flex-wrap:wrap;min-height:108px;align-items:center;justify-content:center;margin-bottom:12px;padding:8px;border-radius:13px;border:1px solid var(--bd);background:var(--bg2)}
+.slot{width:94px;height:94px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;border:2px solid transparent;will-change:transform;transition:transform .18s}
 .slot.win{transform:scale(1.11)}
 .slot canvas{position:absolute;inset:0;pointer-events:none}
 .slot .si{font-size:25px;position:relative;z-index:2}
@@ -129,49 +134,44 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
 .slot .sr{font-size:9px;position:relative;z-index:2;opacity:.85}
 .slot .sv2{font-size:9px;position:relative;z-index:2;opacity:.6}
 
-/* ── PANELS ── */
+/* PANELS */
 .tcol{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
 @media(max-width:560px){.tcol{grid-template-columns:1fr}}
 .panel{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:13px}
-.ptitle{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;
-  letter-spacing:.07em;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.ptitle{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
 .ptitle button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:11px;padding:0}
 .ptitle button:hover{color:var(--text)}
-.bdisp{display:flex;align-items:center;gap:11px;background:var(--bg2);
-  border-radius:9px;padding:9px 11px;border:1px solid var(--bd)}
-.bibox{width:50px;height:50px;border-radius:9px;display:flex;align-items:center;
-  justify-content:center;font-size:25px;position:relative;overflow:hidden;flex-shrink:0;border:2px solid var(--bd)}
+.bdisp{display:flex;align-items:center;gap:11px;background:var(--bg2);border-radius:9px;padding:9px 11px;border:1px solid var(--bd)}
+.bibox{width:50px;height:50px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:25px;position:relative;overflow:hidden;flex-shrink:0;border:2px solid var(--bd)}
 .bibox canvas{position:absolute;inset:0;pointer-events:none}
 .bibox .bi{position:relative;z-index:2}
-.lbrow{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:8px;
-  margin-bottom:5px;background:var(--bg2);border:1px solid var(--bd)}
+.lbrow{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:8px;margin-bottom:5px;background:var(--bg2);border:1px solid var(--bd)}
 .lbrank{font-size:15px;font-weight:700;width:22px;text-align:center;flex-shrink:0}
 .lbname{flex:1;font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lbblock{font-size:10px;padding:3px 7px;border-radius:5px;font-weight:600;flex-shrink:0}
 .lbsc{font-size:10px;color:var(--muted);flex-shrink:0}
+.lbspin{font-size:9px;color:var(--muted);flex-shrink:0}
 
-/* ── UPGRADES ── */
+/* UPGRADES */
 .ugrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:6px}
 .uc{background:var(--bg2);border-radius:8px;padding:9px 10px;border:1px solid var(--bd)}
 .uc h4{font-size:11px;font-weight:600;margin-bottom:3px}
 .uc .ud{font-size:9px;color:var(--muted);margin-bottom:5px;line-height:1.3}
 .uc .ul{font-size:9px;color:var(--muted);margin-bottom:4px}
-.ubtn{width:100%;padding:5px 0;font-size:10px;border-radius:5px;border:1px solid var(--bd);
-  background:var(--bg3);cursor:pointer;color:var(--text);transition:.15s}
+.ubtn{width:100%;padding:5px 0;font-size:10px;border-radius:5px;border:1px solid var(--bd);background:var(--bg3);cursor:pointer;color:var(--text);transition:.15s}
 .ubtn:hover:not(:disabled){background:var(--acc);color:#fff;border-color:var(--acc)}
 .ubtn:disabled{opacity:.3;cursor:not-allowed}
 
-/* ── ANIMATIONS ── */
+/* LUCK BREAKDOWN TOOLTIP */
+.luck-breakdown{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.4}
+
 @keyframes drop{0%{opacity:0;transform:translateY(-22px) scale(.85)}65%{transform:translateY(3px) scale(1.04)}100%{opacity:1;transform:none}}
 @keyframes wpop{0%{transform:scale(1.11)}42%{transform:scale(1.21)}100%{transform:scale(1.11)}}
-@keyframes luckPulse{0%,100%{box-shadow:0 0 8px var(--gold)}50%{box-shadow:0 0 22px var(--gold),0 0 40px #f4c43055}}
-@keyframes ownerGlow{0%,100%{border-color:var(--owner)}50%{border-color:#ffaa66;box-shadow:0 0 18px #ff6b3544}}
-@keyframes giftBounce{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
 </style>
 </head>
 <body>
 
-<!-- ══ AUTH ══ -->
+<!-- AUTH -->
 <div id="authPage">
   <div class="abox">
     <div class="alogo">🎰</div>
@@ -194,7 +194,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
       <div class="fg"><label>Username</label>
         <input id="rU" type="text" placeholder="pemain_baru" maxlength="20" autocomplete="off"
           onkeydown="if(event.key==='Enter')document.getElementById('rP').focus()">
-        <div class="hint">2–20 karakter · 1 device bisa buat banyak akun berbeda</div></div>
+        <div class="hint">2–20 karakter · 1 device bisa buat banyak akun</div></div>
       <div class="fg"><label>Password</label>
         <input id="rP" type="password" placeholder="Min 6 karakter" autocomplete="new-password"
           onkeydown="if(event.key==='Enter')doRegister()"></div>
@@ -204,69 +204,85 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
   </div>
 </div>
 
-<!-- ══ REDEEM MODAL ══ -->
+<!-- REDEEM MODAL -->
 <div id="redeemModal">
   <div class="rmodal">
-    <div style="text-align:center;font-size:36px;margin-bottom:8px">🎁</div>
+    <div style="text-align:center;font-size:38px;margin-bottom:6px">🎁</div>
     <h3>Redeem Code</h3>
-    <p>Masukkan kode untuk mendapatkan hadiah eksklusif</p>
+    <div class="rsub">Masukkan kode eksklusif untuk mendapatkan hadiah</div>
     <div class="rmsg" id="rmsg"></div>
-    <input id="redeemInput" type="text" placeholder="Masukkan kode..." autocomplete="off"
-      style="text-transform:uppercase" onkeydown="if(event.key==='Enter')doRedeem()">
-    <div class="rmodal-btns">
-      <button class="rbtn-cancel" onclick="closeRedeem()">Batal</button>
-      <button class="rbtn-ok" onclick="doRedeem()">🎁 Redeem</button>
+    <input id="redeemIn" type="text" placeholder="KODE DISINI..." autocomplete="off"
+      onkeydown="if(event.key==='Enter')doRedeem()">
+    <div class="rbtns">
+      <button class="rbcancel" onclick="closeRedeem()">Batal</button>
+      <button class="rbok" onclick="doRedeem()">🎁 Redeem!</button>
     </div>
-    <div id="redeemHistory" style="margin-top:14px;font-size:10px;color:var(--muted)"></div>
+    <div class="rhist" id="rhist"></div>
   </div>
 </div>
 
-<!-- ══ GAME ══ -->
+<!-- GAME -->
 <div id="gamePage">
+
+  <!-- GLOBAL CHAT -->
+  <div id="chatWrap">
+    <div id="chatHead" onclick="toggleChat()">
+      <span>💬 Global Chat</span>
+      <span id="chatToggle">▲ Tutup</span>
+    </div>
+    <div id="chatBody">
+      <div id="chatMsgs"></div>
+      <div id="chatRow">
+        <input id="chatIn" placeholder="Tulis pesan..." maxlength="200"
+          onkeydown="if(event.key==='Enter')sendChat()">
+        <button id="chatSend" onclick="sendChat()">Kirim ↗</button>
+      </div>
+    </div>
+  </div>
 
   <!-- NAV -->
   <div class="nav">
     <div class="nlogo">🎰 RNG Spinner</div>
     <div class="nright">
       <div class="nuser">Player: <b id="navU">—</b><span class="sdot"></span></div>
-      <!-- Gift / Redeem Button -->
       <button id="redeemBtn" onclick="openRedeem()" title="Redeem Code">
-        <span class="rn" style="animation:giftBounce 2s infinite">🎁</span>
-        <span>Redeem</span>
-        <span class="rbadge" id="newBadge" style="display:none">!</span>
+        <span class="ricon">🎁</span><span>Redeem</span>
       </button>
       <button class="lgbtn" onclick="doLogout()">Logout</button>
     </div>
   </div>
 
-  <!-- OWNER PANEL (hidden by default, revealed by code) -->
-  <div id="ownerPanel" style="animation:ownerGlow 2s infinite">
-    <div class="owner-title">
-      <span style="font-size:20px">👑</span>
-      Owner Panel — Mode Eksklusif
-    </div>
-    <div class="owner-grid">
-      <!-- Luck 999x Toggle -->
+  <!-- OWNER PANEL -->
+  <div id="ownerPanel">
+    <div class="otitle"><span style="font-size:20px">👑</span> Owner Panel</div>
+    <div class="ogrid">
+
+      <!-- Luck Toggle -->
       <div class="ocard">
-        <h5>🍀 Global Luck 999×</h5>
-        <label>Aktifkan luck 999× untuk akun ini</label>
-        <div class="luck-indicator" id="luckInd">
-          <div class="luck-dot" id="luckDot"></div>
-          <span id="luckIndText">Luck Normal</span>
+        <h5>🍀 Owner Luck 99999999×</h5>
+        <div class="lindicator">
+          <div class="ldot" id="oluckDot"></div>
+          <span id="oluckTxt">Luck Normal</span>
         </div>
-        <button class="obtn toggle" id="luckToggle" onclick="ownerToggleLuck()">
-          Aktifkan Luck 999×
-        </button>
+        <div id="luckBreak" class="luck-breakdown"></div>
+        <button class="obtn tog" id="oluckBtn" onclick="ownerToggleLuck()">Aktifkan Owner Luck</button>
       </div>
-      <!-- Give Block Aura -->
+
+      <!-- Give Block -->
       <div class="ocard">
-        <h5>✨ Give Block Aura</h5>
+        <h5>✨ Give Block ke Player</h5>
         <label>Username penerima</label>
-        <input id="giveTarget" type="text" placeholder="username pemain">
-        <label>Block & Rarity</label>
-        <input id="giveBlock" type="text" placeholder="cth: Phoenix · Divine">
-        <button class="obtn" onclick="ownerGiveBlock()">✨ Berikan Block</button>
-        <div id="giveMsg" style="font-size:10px;margin-top:5px;color:var(--ok)"></div>
+        <input id="giveUser" type="text" placeholder="username">
+        <label>Block ID</label>
+        <select id="giveBlockId">
+          <option value="">— Pilih Block —</option>
+        </select>
+        <label>Rarity ID</label>
+        <select id="giveRarId">
+          <option value="">— Pilih Rarity —</option>
+        </select>
+        <button class="obtn" onclick="ownerGiveBlock()">✨ Give Block</button>
+        <div id="giveMsg" style="font-size:10px;margin-top:5px"></div>
       </div>
     </div>
   </div>
@@ -292,18 +308,18 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
   <div class="tcol">
     <div class="panel">
       <div class="ptitle">🏆 Best Block Kamu</div>
-      <div class="bdisp" id="bdisp">
+      <div class="bdisp">
         <div class="bibox" id="bibox"><canvas id="bcv" width="50" height="50"></canvas><span class="bi" id="bicon">🎲</span></div>
         <div>
           <div id="bname" style="font-size:13px;font-weight:700;color:var(--muted)">Belum ada</div>
-          <div id="brar"  style="font-size:10px;color:var(--muted)">Spin dulu!</div>
+          <div id="brar" style="font-size:10px;color:var(--muted)">Spin dulu!</div>
           <div id="broll" style="font-size:9px;color:var(--muted)"></div>
         </div>
       </div>
     </div>
     <div class="panel">
       <div class="ptitle">📊 Leaderboard Top 5
-        <button onclick="loadLB()">↻ Refresh</button>
+        <button onclick="loadLB()">↻</button>
       </div>
       <div id="lbCont"><div style="color:var(--muted);font-size:11px;text-align:center;padding:10px">Loading…</div></div>
     </div>
@@ -316,37 +332,35 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
 </div>
 
 <script>
-// ══════════════════════════════════════
-// CONFIG — GANTI DENGAN MILIKMU
-// ══════════════════════════════════════
+// ══════════════════════════
+// SUPABASE CONFIG
+// ══════════════════════════
 const SUPA_URL = 'https://ynksdrtqlwgnbmsydohm.supabase.co';
 const SUPA_KEY = 'sb_publishable_c3ChXqxrASbZa5mu6YvZvg_ghZysUrG';
 const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 
-// ══════════════════════════════════════
+// ══════════════════════════
 // REDEEM CODES
-// ══════════════════════════════════════
+// ══════════════════════════
 const CODES = {
   'BETHEOWNER00': {
-    type: 'owner',
-    desc: '👑 Owner Panel diaktifkan!',
-    once: true,
+    type:'owner',
+    desc:'👑 Owner Panel diaktifkan! Selamat datang, Boss.',
+    once:true,
   },
   'BETATESTING111': {
-    type: 'luck_boost',
-    value: 3,       // luck multiplier bonus
-    duration: null, // permanent until logout
-    desc: '🍀 Luck 3× diaktifkan! (berlaku hingga logout)',
-    once: true,
+    type:'luck_boost',
+    mult:3,   // dikalikan ke luck saat ini
+    desc:'🍀 Beta Luck 3× aktif! Luck kamu dikalikan 3!',
+    once:true,
+    tag:'beta',
   },
 };
 
-// ══════════════════════════════════════
-// RARITIES — bobot yang benar-benar mempengaruhi drop
-// Luck tinggi = rare+ naik drastis, common turun
-// ══════════════════════════════════════
+// ══════════════════════════
+// RARITIES
+// ══════════════════════════
 const RAR = [
-  // id, name, score, baseWeight, maxRoll, bg, border, textColor, particles, speed
   {id:'common',    name:'Common',    score:1,     w:5000, maxR:10,   bg:'#111118',bd:'#3a3a55',tc:'#9090b0',pN:4, sp:.5},
   {id:'uncommon',  name:'Uncommon',  score:5,     w:2000, maxR:50,   bg:'#061a0e',bd:'#1a6b30',tc:'#4ade80',pN:7, sp:.8},
   {id:'rare',      name:'Rare',      score:20,    w:800,  maxR:200,  bg:'#060e1e',bd:'#1a4db8',tc:'#60a5fa',pN:10,sp:1.1},
@@ -383,7 +397,7 @@ const BLK = [
   {n:'Zenith',i:'🌐',a:'cosmic'},
 ];
 
-const AURA = {
+const AURA={
   fire:['#ff6600','#ff3300','#ffaa00'],ice:['#66ccff','#aaeeff','#33aaff'],
   elec:['#ffff00','#ffcc00','#ffffff'],dark:['#8800cc','#5500aa','#cc22ff'],
   cosmic:['#4400aa','#8800ff','#cc44ff'],nat:['#00cc44','#44ff88','#88ff44'],
@@ -392,38 +406,74 @@ const AURA = {
   rune:['#ffaa44','#ff6600','#ffee88'],chaos:['#ff00ff','#00ffff','#ff8800'],
 };
 
-const UPG = [
+const UPG=[
   {id:'fastRoll',  label:'Fast Roll',   max:3,
    descs:['Auto 30% lebih cepat','Auto 55% lebih cepat','Auto speed max'],costs:[5,14,28]},
-  {id:'doubleRoll',label:'Double Roll', max:5,
-   descs:['+1 slot per spin','+1 slot per spin','+1 slot per spin','+1 slot per spin','+1 slot per spin'],costs:[10,25,50,300,1000000]},
+  {id:'doubleRoll',label:'Double Roll', max:2,
+   descs:['2 slot per spin','3 slot per spin'],costs:[10,25]},
   {id:'luckRoll',  label:'Luck Roll',   max:50,
-   descs:Array.from({length:50},(_,i)=>`+${(i+1)*20}% peluang rare`),
+   descs:Array.from({length:50},(_,i)=>`Luck +${(i+1)*20}%`),
    costs:Array.from({length:50},(_,i)=>Math.ceil(4+Math.pow(i,1.6)*.55))},
 ];
 
-// ══════════════════════════════════════
-// STATE
-// ══════════════════════════════════════
-let G = {
-  tokens:0, spins:0, rares:0, bestBlock:null,
-  autoOn:false, autoIv:null,
-  upg:{fastRoll:0, doubleRoll:0, luckRoll:0},
-  // Special states
-  isOwner: false,        // unlocked by BETHEOWNER00
-  ownerLuck999: false,   // owner-toggled 999x luck
-  bonusLuck: 0,          // additive luck multiplier from codes (e.g. 3 from betatesting111)
-  redeemedCodes: [],     // list of used codes
-};
-let CU = null;
-let saveQ = null, bestStop = null, slotStops = [];
-
-const RCOLS = {common:'#9090b0',uncommon:'#4ade80',rare:'#60a5fa',epic:'#c084fc',
+const RCOLS={common:'#9090b0',uncommon:'#4ade80',rare:'#60a5fa',epic:'#c084fc',
   legendary:'#fbbf24',mythic:'#fb7185',divine:'#f0abfc',eternal:'#67e8f9',omega:'#fff'};
 
-// ══════════════════════════════════════
-// AUTH UI
-// ══════════════════════════════════════
+// ══════════════════════════
+// STATE
+// ══════════════════════════
+let G={
+  tokens:0,spins:0,rares:0,bestBlock:null,autoOn:false,autoIv:null,
+  upg:{fastRoll:0,doubleRoll:0,luckRoll:0},
+  isOwner:false, ownerLuckOn:false,
+  betaLuckMult:0,   // from BETATESTING111: multiplied onto base
+  redeemedCodes:[],
+};
+let CU=null;
+let saveQ=null,bestStop=null,slotStops=[];
+let chatSub=null,chatOpen=true;
+
+// ══════════════════════════
+// LUCK CALCULATION
+// Luck base = 1 + luckRoll*0.2
+// Beta mult  = base × betaLuckMult  (if redeemed)
+// Owner luck = 99999999 (override all)
+// ══════════════════════════
+function getLuckBreakdown(){
+  const base = 1 + G.upg.luckRoll * 0.2;
+  let after_beta = base;
+  if(G.betaLuckMult > 0) after_beta = base * G.betaLuckMult;
+  const final = (G.isOwner && G.ownerLuckOn) ? 99999999 : after_beta;
+  return {base, after_beta, final};
+}
+
+function getTotalLuck(){
+  return getLuckBreakdown().final;
+}
+
+function pickRar(){
+  const lk = getTotalLuck();
+  const pool = RAR.map((r,i)=>{
+    let w = r.w;
+    if(i===0) w = Math.max(0.01, r.w / Math.pow(lk, 0.9));
+    else if(i===1) w = Math.max(0.01, r.w / Math.pow(lk, 0.5));
+    else w = r.w * lk;
+    return {r,w};
+  });
+  let tot=pool.reduce((a,b)=>a+b.w,0), rnd=Math.random()*tot;
+  for(const{r,w}of pool){rnd-=w;if(rnd<=0)return r;}
+  return RAR[0];
+}
+
+function makeBlock(){
+  const r=pickRar(), b=BLK[Math.floor(Math.random()*BLK.length)];
+  return{rarity:r,block:b,roll:Math.floor(Math.random()*r.maxR)+1};
+}
+function blockScore(b){return b.rarity.score*100000+b.roll;}
+
+// ══════════════════════════
+// AUTH
+// ══════════════════════════
 function switchTab(t){
   document.getElementById('tLogin').classList.toggle('on',t==='login');
   document.getElementById('tReg').classList.toggle('on',t==='reg');
@@ -435,58 +485,52 @@ function msg(m,c){const e=document.getElementById('amsg');e.textContent=m;e.clas
 function setBtn(id,t,d){const b=document.getElementById(id);b.textContent=t;b.disabled=d;}
 
 async function doLogin(){
-  const u=document.getElementById('lU').value.trim();
-  const p=document.getElementById('lP').value;
+  const u=document.getElementById('lU').value.trim(), p=document.getElementById('lP').value;
   if(!u||!p){msg('Isi username & password','err');return;}
   setBtn('btnL','Masuk…',true);msg('','');
   try{
     const{data,error}=await sb.rpc('login_player',{p_username:u,p_password:p});
     if(error){msg('Error: '+error.message,'err');setBtn('btnL','▶ Masuk',false);return;}
-    if(!data||!data.ok){msg(data?.msg||'Login gagal','err');setBtn('btnL','▶ Masuk',false);return;}
+    if(!data?.ok){msg(data?.msg||'Login gagal','err');setBtn('btnL','▶ Masuk',false);return;}
     localStorage.setItem('rng_uid',data.id);
     enterGame(data);
-  }catch(e){msg('Koneksi gagal. Cek SUPA_URL & SUPA_KEY','err');}
+  }catch(e){msg('Koneksi gagal','err');}
   setBtn('btnL','▶ Masuk',false);
 }
 
 async function doRegister(){
-  const u=document.getElementById('rU').value.trim();
-  const p=document.getElementById('rP').value;
+  const u=document.getElementById('rU').value.trim(), p=document.getElementById('rP').value;
   if(!u||!p){msg('Isi semua field','err');return;}
   setBtn('btnR','Mendaftar…',true);msg('','');
   try{
     const{data,error}=await sb.rpc('register_player',{p_username:u,p_password:p});
     if(error){msg('Error: '+error.message,'err');setBtn('btnR','✦ Buat Akun',false);return;}
-    if(!data||!data.ok){msg(data?.msg||'Gagal','err');setBtn('btnR','✦ Buat Akun',false);return;}
+    if(!data?.ok){msg(data?.msg||'Gagal','err');setBtn('btnR','✦ Buat Akun',false);return;}
     msg('✅ Akun "'+data.username+'" berhasil! Silakan login.','ok');
-    switchTab('login');
-    document.getElementById('lU').value=u;
+    switchTab('login'); document.getElementById('lU').value=u;
   }catch(e){msg('Koneksi gagal.','err');}
   setBtn('btnR','✦ Buat Akun',false);
 }
 
 window.addEventListener('load',async()=>{
-  const id=localStorage.getItem('rng_uid');
-  if(!id)return;
+  const id=localStorage.getItem('rng_uid'); if(!id)return;
   document.getElementById('authPage').style.display='none';
   document.getElementById('gamePage').style.display='block';
   document.getElementById('logLine').textContent='Memuat data...';
   try{
     const{data,error}=await sb.from('players')
-      .select('id,username,tokens,spins,rares,upgrades,best_block,best_score')
-      .eq('id',id).single();
+      .select('id,username,tokens,spins,rares,upgrades,best_block,best_score').eq('id',id).single();
     if(error||!data){
       const cache=localStorage.getItem('rng_cache');
       if(cache){enterGame(JSON.parse(cache));return;}
       localStorage.removeItem('rng_uid');
       document.getElementById('gamePage').style.display='none';
-      document.getElementById('authPage').style.display='flex';
-      return;
+      document.getElementById('authPage').style.display='flex'; return;
     }
     enterGame(data);
   }catch(e){
     const cache=localStorage.getItem('rng_cache');
-    if(cache)enterGame(JSON.parse(cache));
+    if(cache) enterGame(JSON.parse(cache));
     else{localStorage.removeItem('rng_uid');document.getElementById('gamePage').style.display='none';document.getElementById('authPage').style.display='flex';}
   }
 });
@@ -504,34 +548,32 @@ function enterGame(d){
   G.spins =Math.max(0,Number(d.spins) ||0);
   G.rares =Math.max(0,Number(d.rares) ||0);
   G.bestBlock=d.best_block||null;
-  // Load saved codes & owner state from localStorage
-  const saved=JSON.parse(localStorage.getItem('rng_perks_'+CU.id)||'{}');
-  G.isOwner=saved.isOwner||false;
-  G.ownerLuck999=saved.ownerLuck999||false;
-  G.bonusLuck=saved.bonusLuck||0;
-  G.redeemedCodes=saved.redeemedCodes||[];
-
+  const perks=JSON.parse(localStorage.getItem('rng_perks_'+CU.id)||'{}');
+  G.isOwner=perks.isOwner||false;
+  G.ownerLuckOn=perks.ownerLuckOn||false;
+  G.betaLuckMult=perks.betaLuckMult||0;
+  G.redeemedCodes=perks.redeemedCodes||[];
   if(G.bestBlock)renderBest(G.bestBlock);
-  if(G.isOwner)showOwnerPanel();
+  if(G.isOwner){document.getElementById('ownerPanel').style.display='block';document.getElementById('navU').classList.add('isowner');populateOwnerDropdowns();}
   document.getElementById('authPage').style.display='none';
   document.getElementById('gamePage').style.display='block';
-  refreshStats();refreshUpg();loadLB();
-  updateOwnerUI();
-  cacheLocal();
+  refreshStats();refreshUpg();loadLB();updateOwnerUI();cacheLocal();
+  subscribeChat();
 }
 
 async function doLogout(){
   if(G.autoOn)toggleAuto();
   await saveNow();
+  if(chatSub)sb.removeChannel(chatSub);
   localStorage.removeItem('rng_uid');localStorage.removeItem('rng_cache');
-  // Keep perks tied to account id so they persist on re-login
   CU=null;
   G={tokens:0,spins:0,rares:0,bestBlock:null,autoOn:false,autoIv:null,
-     upg:{fastRoll:0,doubleRoll:0,luckRoll:0},
-     isOwner:false,ownerLuck999:false,bonusLuck:0,redeemedCodes:[]};
+     upg:{fastRoll:0,doubleRoll:0,luckRoll:0},isOwner:false,ownerLuckOn:false,betaLuckMult:0,redeemedCodes:[]};
   stopAllAuras();
   document.getElementById('slotsArea').innerHTML='';
+  document.getElementById('chatMsgs').innerHTML='';
   document.getElementById('ownerPanel').style.display='none';
+  document.getElementById('navU').classList.remove('isowner');
   ['bibox','bicon','bname','brar','broll'].forEach(id=>{
     const el=document.getElementById(id);
     if(id==='bicon')el.textContent='🎲';
@@ -545,20 +587,19 @@ async function doLogout(){
   msg('Berhasil logout!','ok');
 }
 
-// ══════════════════════════════════════
-// SAVE / CACHE
-// ══════════════════════════════════════
+// ══════════════════════════
+// SAVE
+// ══════════════════════════
 function scheduleSave(){clearTimeout(saveQ);saveQ=setTimeout(saveNow,2500);}
 async function saveNow(){
   if(!CU)return;
-  cacheLocal();
-  savePerks();
+  cacheLocal();savePerks();
   const{error}=await sb.rpc('save_player',{
     p_id:CU.id,p_tokens:G.tokens,p_spins:G.spins,p_rares:G.rares,
     p_upgrades:G.upg,p_best_block:G.bestBlock,
     p_best_score:G.bestBlock?blockScore(G.bestBlock):0
   });
-  if(error)console.warn('Save failed:',error.message);
+  if(error)console.warn('Save err:',error.message);
 }
 function cacheLocal(){
   if(!CU)return;
@@ -570,195 +611,169 @@ function cacheLocal(){
 function savePerks(){
   if(!CU)return;
   try{localStorage.setItem('rng_perks_'+CU.id,JSON.stringify({
-    isOwner:G.isOwner,ownerLuck999:G.ownerLuck999,
-    bonusLuck:G.bonusLuck,redeemedCodes:G.redeemedCodes
+    isOwner:G.isOwner,ownerLuckOn:G.ownerLuckOn,
+    betaLuckMult:G.betaLuckMult,redeemedCodes:G.redeemedCodes
   }));}catch(_){}
 }
 window.addEventListener('beforeunload',()=>saveNow());
 document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow();});
 
-// ══════════════════════════════════════
-// REDEEM SYSTEM
-// ══════════════════════════════════════
+// ══════════════════════════
+// CHAT — Supabase Realtime
+// ══════════════════════════
+function subscribeChat(){
+  chatSub=sb.channel('rng-global-chat')
+    .on('broadcast',{event:'msg'},(p)=>{
+      appendChatMsg(p.payload.who,p.payload.text,p.payload.isOwner,p.payload.sys);
+    }).subscribe();
+}
+
+function toggleChat(){
+  chatOpen=!chatOpen;
+  document.getElementById('chatBody').style.display=chatOpen?'block':'none';
+  document.getElementById('chatToggle').textContent=chatOpen?'▲ Tutup':'▼ Buka';
+}
+
+function appendChatMsg(who,text,isOwner,sys){
+  const box=document.getElementById('chatMsgs');
+  const d=document.createElement('div');
+  d.className='cmsg'+(isOwner?' owner-msg':sys?' sys-msg':'');
+  d.innerHTML=`<span class="cw" style="color:${isOwner?'var(--owner)':sys?'var(--acc)':'var(--acc2)'}">${esc(who)}${isOwner?' 👑':''}</span>${esc(text)}`;
+  box.appendChild(d);
+  while(box.children.length>60)box.removeChild(box.firstChild);
+  box.scrollTop=box.scrollHeight;
+}
+
+async function sendChat(){
+  if(!CU)return;
+  const inp=document.getElementById('chatIn');
+  const text=inp.value.trim();
+  if(!text)return;
+  inp.value='';
+  appendChatMsg(CU.username,text,G.isOwner,false);
+  await sb.channel('rng-global-chat').send({
+    type:'broadcast',event:'msg',
+    payload:{who:CU.username,text,isOwner:G.isOwner,sys:false}
+  });
+}
+
+// ══════════════════════════
+// REDEEM
+// ══════════════════════════
 function openRedeem(){
-  document.getElementById('redeemModal').classList.add('open');
-  document.getElementById('redeemInput').value='';
+  document.getElementById('redeemModal').style.display='flex';
+  document.getElementById('redeemIn').value='';
   document.getElementById('rmsg').textContent='';
   document.getElementById('rmsg').className='rmsg';
-  // Show history
-  const h=document.getElementById('redeemHistory');
-  if(G.redeemedCodes.length){
-    h.innerHTML='<b>Sudah diredeem:</b> '+G.redeemedCodes.map(c=>`<span style="color:var(--ok)">${c}</span>`).join(', ');
-  } else {
-    h.textContent='';
-  }
-  setTimeout(()=>document.getElementById('redeemInput').focus(),100);
+  const h=document.getElementById('rhist');
+  h.innerHTML=G.redeemedCodes.length?'Sudah diredeem: '+G.redeemedCodes.map(c=>`<span style="color:var(--ok)">${c}</span>`).join(', '):'';
+  setTimeout(()=>document.getElementById('redeemIn').focus(),80);
 }
-function closeRedeem(){
-  document.getElementById('redeemModal').classList.remove('open');
-}
-// Close on backdrop click
-document.getElementById('redeemModal').addEventListener('click',function(e){
-  if(e.target===this)closeRedeem();
-});
+function closeRedeem(){document.getElementById('redeemModal').style.display='none';}
+document.getElementById('redeemModal').addEventListener('click',function(e){if(e.target===this)closeRedeem();});
 
 function doRedeem(){
-  const raw=document.getElementById('redeemInput').value.trim().toUpperCase();
-  const rmsg=document.getElementById('rmsg');
-
-  if(!raw){rmsg.textContent='Masukkan kode!';rmsg.className='rmsg err';return;}
-  if(!CU){rmsg.textContent='Login dulu!';rmsg.className='rmsg err';return;}
-
+  const raw=document.getElementById('redeemIn').value.trim().toUpperCase();
+  const rm=document.getElementById('rmsg');
+  if(!raw){rm.textContent='Masukkan kode!';rm.className='rmsg err';return;}
+  if(!CU){rm.textContent='Login dulu!';rm.className='rmsg err';return;}
   const code=CODES[raw];
-  if(!code){rmsg.textContent='❌ Kode tidak valid';rmsg.className='rmsg err';return;}
-
-  if(code.once&&G.redeemedCodes.includes(raw)){
-    rmsg.textContent='⚠️ Kode sudah pernah digunakan';rmsg.className='rmsg err';return;
-  }
-
-  // Apply effect
+  if(!code){rm.textContent='❌ Kode tidak valid';rm.className='rmsg err';return;}
+  if(code.once&&G.redeemedCodes.includes(raw)){rm.textContent='⚠️ Kode sudah digunakan';rm.className='rmsg err';return;}
   applyCode(raw,code);
-  G.redeemedCodes.push(raw);
-  savePerks();
-
-  rmsg.textContent='✅ '+code.desc;rmsg.className='rmsg ok';
-  document.getElementById('redeemInput').value='';
-  // Update history
-  const h=document.getElementById('redeemHistory');
-  h.innerHTML='<b>Sudah diredeem:</b> '+G.redeemedCodes.map(c=>`<span style="color:var(--ok)">${c}</span>`).join(', ');
-
+  G.redeemedCodes.push(raw);savePerks();
+  rm.textContent='✅ '+code.desc;rm.className='rmsg ok';
+  document.getElementById('redeemIn').value='';
+  document.getElementById('rhist').innerHTML='Sudah diredeem: '+G.redeemedCodes.map(c=>`<span style="color:var(--ok)">${c}</span>`).join(', ');
   refreshStats();
 }
 
 function applyCode(raw,code){
   if(code.type==='owner'){
     G.isOwner=true;
-    showOwnerPanel();
-    document.getElementById('navU').classList.add('owner');
+    document.getElementById('ownerPanel').style.display='block';
+    document.getElementById('navU').classList.add('isowner');
+    populateOwnerDropdowns();
+    updateOwnerUI();
+    appendChatMsg('SYSTEM','👑 '+CU.username+' baru saja mendapatkan Owner!',false,true);
+    sb.channel('rng-global-chat').send({type:'broadcast',event:'msg',
+      payload:{who:'SYSTEM',text:'👑 '+CU.username+' baru saja mendapatkan Owner!',isOwner:false,sys:true}});
   } else if(code.type==='luck_boost'){
-    G.bonusLuck=code.value;
-    refreshStats();
-    document.getElementById('logLine').textContent='🍀 Luck 3× aktif dari kode beta!';
+    G.betaLuckMult=code.mult;
+    document.getElementById('logLine').textContent='🍀 Beta Luck aktif! Luck dasar kamu dikali '+code.mult+'×';
   }
 }
 
-// ══════════════════════════════════════
+// ══════════════════════════
 // OWNER PANEL
-// ══════════════════════════════════════
-function showOwnerPanel(){
-  document.getElementById('ownerPanel').style.display='block';
-  document.getElementById('navU').classList.add('owner');
-  document.getElementById('newBadge').style.display=G.isOwner?'':'none';
-  updateOwnerUI();
+// ══════════════════════════
+function populateOwnerDropdowns(){
+  const bSel=document.getElementById('giveBlockId');
+  const rSel=document.getElementById('giveRarId');
+  if(bSel.options.length>1)return;
+  BLK.forEach(b=>{const o=document.createElement('option');o.value=b.n;o.textContent=b.i+' '+b.n;bSel.appendChild(o);});
+  RAR.forEach(r=>{const o=document.createElement('option');o.value=r.id;o.textContent=r.name+' ('+r.id+')';rSel.appendChild(o);});
 }
 
 function updateOwnerUI(){
   if(!G.isOwner)return;
-  const btn=document.getElementById('luckToggle');
-  const dot=document.getElementById('luckDot');
-  const txt=document.getElementById('luckIndText');
-  if(G.ownerLuck999){
-    btn.textContent='🍀 Nonaktifkan Luck 999×';
-    btn.classList.add('active');
-    dot.classList.add('on');
-    txt.textContent='LUCK 999× AKTIF!';
-    txt.style.color='var(--gold)';
-    document.getElementById('scLuck').style.animation='luckPulse 1.5s infinite';
-  } else {
-    btn.textContent='Aktifkan Luck 999×';
-    btn.classList.remove('active');
-    dot.classList.remove('on');
-    txt.textContent='Luck Normal';
-    txt.style.color='';
-    document.getElementById('scLuck').style.animation='';
+  const btn=document.getElementById('oluckBtn');
+  const dot=document.getElementById('oluckDot');
+  const txt=document.getElementById('oluckTxt');
+  const bd =document.getElementById('luckBreak');
+  const brk=getLuckBreakdown();
+  if(G.ownerLuckOn){
+    btn.textContent='🍀 Nonaktifkan Owner Luck';btn.classList.add('on');
+    dot.classList.add('on');txt.textContent='OWNER LUCK 99999999× AKTIF!';txt.style.color='var(--gold)';
+  }else{
+    btn.textContent='Aktifkan Owner Luck';btn.classList.remove('on');
+    dot.classList.remove('on');txt.textContent='Owner Luck OFF';txt.style.color='';
   }
+  let brkTxt=`Base: ${brk.base.toFixed(2)}×`;
+  if(G.betaLuckMult>0) brkTxt+=` × Beta(${G.betaLuckMult}) = ${brk.after_beta.toFixed(2)}×`;
+  if(G.ownerLuckOn) brkTxt+=` → 99999999×`;
+  bd.textContent=brkTxt;
   refreshStats();
 }
 
 function ownerToggleLuck(){
   if(!G.isOwner)return;
-  G.ownerLuck999=!G.ownerLuck999;
-  savePerks();
+  G.ownerLuckOn=!G.ownerLuckOn;savePerks();
   updateOwnerUI();
-  document.getElementById('logLine').textContent=G.ownerLuck999?
-    '👑 Luck 999× AKTIF! Setiap spin hampir pasti langka!':
-    'Luck 999× dinonaktifkan.';
+  document.getElementById('logLine').textContent=G.ownerLuckOn?
+    '👑 Owner Luck 99999999× AKTIF! Hampir pasti OMEGA!':'Owner Luck dinonaktifkan.';
 }
 
 async function ownerGiveBlock(){
   if(!G.isOwner)return;
-  const target=document.getElementById('giveTarget').value.trim();
-  const blockDesc=document.getElementById('giveBlock').value.trim();
+  const target=document.getElementById('giveUser').value.trim();
+  const blockId=document.getElementById('giveBlockId').value;
+  const rarId=document.getElementById('giveRarId').value;
   const gmsg=document.getElementById('giveMsg');
-  if(!target||!blockDesc){gmsg.style.color='var(--err)';gmsg.textContent='Isi username dan block!';return;}
-
-  // Find target player
+  if(!target||!blockId||!rarId){gmsg.style.color='var(--err)';gmsg.textContent='Lengkapi semua field!';return;}
+  gmsg.textContent='Mengirim...';gmsg.style.color='var(--muted)';
   const{data,error}=await sb.from('players').select('id,best_block,best_score').ilike('username',target).single();
   if(error||!data){gmsg.style.color='var(--err)';gmsg.textContent='❌ Username tidak ditemukan';return;}
-
-  // Parse blockDesc → find matching block or create a special one
-  const parts=blockDesc.split('·').map(s=>s.trim());
-  const blockName=parts[0]||'cosmos';
-  const rarName=(parts[1]||'omega').toLowerCase();
-  const rarity=RAR.find(r=>r.id===rarName||r.name.toLowerCase()===rarName)||RAR[6]; // default divine
-  const block=BLK.find(b=>b.n.toLowerCase()===blockName.toLowerCase())||BLK[4]; // default Phoenix
-  const roll=Math.floor(Math.random()*rarity.maxR)+1;
+  const rarity=RAR.find(r=>r.id===rarId)||RAR[6];
+  const block=BLK.find(b=>b.n===blockId)||BLK[4];
+  const roll=rarity.maxR; // max roll untuk gift
   const giftBlock={rarity,block,roll};
   const giftScore=blockScore(giftBlock);
-
-  // Only replace if better than current best
-  const newBest=(!data.best_block||giftScore>data.best_score)?giftBlock:JSON.parse(JSON.stringify(data.best_block));
-  const newScore=(!data.best_block||giftScore>data.best_score)?giftScore:data.best_score;
-
-  await sb.from('players').update({best_block:newBest,best_score:newScore,updated_at:new Date().toISOString()}).eq('id',data.id);
+  const better=!data.best_block||giftScore>data.best_score;
+  await sb.from('players').update({
+    best_block:better?giftBlock:data.best_block,
+    best_score:better?giftScore:data.best_score,
+    updated_at:new Date().toISOString()
+  }).eq('id',data.id);
   gmsg.style.color='var(--ok)';
-  gmsg.textContent=`✅ Block ${block.i} ${block.n} (${rarity.name}) diberikan ke ${target}!`;
-  document.getElementById('giveTarget').value='';
-  document.getElementById('giveBlock').value='';
+  gmsg.textContent=`✅ ${block.i} ${block.n} (${rarity.name}) → ${target}!`;
+  document.getElementById('giveUser').value='';
   setTimeout(()=>{gmsg.textContent='';},4000);
 }
 
-// ══════════════════════════════════════
-// LUCK SYSTEM — properly weighted RNG
-// ══════════════════════════════════════
-function getTotalLuck(){
-  // Base from upgrades
-  let lk = 1 + G.upg.luckRoll * 0.2;
-  // Bonus from redeem code (e.g. 3x)
-  if(G.bonusLuck > 0) lk = Math.max(lk, G.bonusLuck);
-  // Owner 999x override
-  if(G.isOwner && G.ownerLuck999) lk = 999999999999999;
-  return lk;
-}
-
-function pickRar(){
-  const lk = getTotalLuck();
-
-  // With luck, rare+ weights are multiplied, common/uncommon divided
-  // This makes high luck actually feel powerful
-  const pool = RAR.map((r, i) => {
-    let w = r.w;
-    if(i === 0) w = Math.max(1, r.w / (lk * 0.8));        // common drops hard
-    else if(i === 1) w = Math.max(1, r.w / (lk * 0.4));   // uncommon drops medium
-    else w = r.w * lk;                                      // rare+ rises
-    return {r, w};
-  });
-
-  let tot = pool.reduce((a,b)=>a+b.w, 0);
-  let rnd = Math.random() * tot;
-  for(const {r,w} of pool){ rnd -= w; if(rnd <= 0) return r; }
-  return RAR[0];
-}
-
-function makeBlock(){
-  const r=pickRar(), b=BLK[Math.floor(Math.random()*BLK.length)];
-  return{rarity:r, block:b, roll:Math.floor(Math.random()*r.maxR)+1};
-}
-function blockScore(b){return b.rarity.score*100000+b.roll;}
-
-// ══════════════════════════════════════
+// ══════════════════════════
 // AURA ENGINE
-// ══════════════════════════════════════
+// ══════════════════════════
 function startAura(cv,b,big){
   const W=cv.width,H=cv.height,cx=W/2,cy=H/2;
   const cols=AURA[b.block.a]||['#fff'];
@@ -790,28 +805,18 @@ function startAura(cv,b,big){
 }
 function stopAllAuras(){for(const f of slotStops)f();slotStops=[];if(bestStop){bestStop();bestStop=null;}}
 
-// ══════════════════════════════════════
+// ══════════════════════════
 // SPIN
-// ══════════════════════════════════════
+// ══════════════════════════
 const SMSG={
-  common:'Block biasa… spin lagi!', uncommon:'Lumayan! Uncommon.',
-  rare:'✨ Rare! Bagus!', epic:'🔥 Epic!! Keren!',
-  legendary:'⭐ LEGENDARY!!!', mythic:'💫 MYTHIC!!!!',
-  divine:'💎 DIVINE!!!!!', eternal:'🌊 ETERNAL!!!!!!',
-  omega:'☠️ OMEGA!!!! MUSTAHIL!!!!!'
+  common:'Block biasa… lanjut spin!',uncommon:'Lumayan! Uncommon.',
+  rare:'✨ Rare!',epic:'🔥 Epic!!',legendary:'⭐ LEGENDARY!!!',
+  mythic:'💫 MYTHIC!!!!',divine:'💎 DIVINE!!!!!',
+  eternal:'🌊 ETERNAL!!!!!!',omega:'☠️ OMEGA!!!! MUSTAHIL!!!!!'
 };
 
-function getLuckTag(){
-  const lk=getTotalLuck();
-  if(G.isOwner&&G.ownerLuck999)return' 👑999×';
-  if(G.bonusLuck>=3)return' 🍀3×';
-  if(lk>1.5)return` 🍀${lk.toFixed(1)}×`;
-  return'';
-}
-
 function doSpin(){
-  const n=1+G.upg.doubleRoll;
-  const blocks=Array.from({length:n},makeBlock);
+  const n=1+G.upg.doubleRoll,blocks=Array.from({length:n},makeBlock);
   G.spins++;G.tokens++;
   G.rares+=blocks.filter(b=>b.rarity.score>=20).length;
   const win=blocks.reduce((a,c)=>blockScore(c)>blockScore(a)?c:a);
@@ -821,10 +826,11 @@ function doSpin(){
   blocks.forEach((b,i)=>{
     const isW=n===1||b===win;
     const el=buildSlot(b,isW,i);area.appendChild(el);
-    const cv=el.querySelector('canvas');
-    if(cv)slotStops.push(startAura(cv,b,isW));
+    const cv=el.querySelector('canvas');if(cv)slotStops.push(startAura(cv,b,isW));
   });
-  document.getElementById('logLine').textContent=(SMSG[win.rarity.id]||'Block!')+getLuckTag()+' +1 token';
+  const lk=getTotalLuck();
+  const ltag=G.ownerLuckOn?' 👑×99M':G.betaLuckMult>0?` 🍀×${lk.toFixed(1)}`:lk>1.5?` 🍀${lk.toFixed(1)}×`:'';
+  document.getElementById('logLine').textContent=(SMSG[win.rarity.id]||'Block!')+ltag+' +1 token';
   refreshStats();refreshUpg();scheduleSave();
 }
 
@@ -858,12 +864,7 @@ function toggleAuto(){
   if(G.autoOn){btn.classList.add('aon');btn.textContent='⏹ Stop Auto';G.autoIv=setInterval(doSpin,ms);}
   else{btn.classList.remove('aon');btn.textContent='⚡ Auto Spin';clearInterval(G.autoIv);}
 }
-function restartAuto(){
-  if(G.autoOn){
-    clearInterval(G.autoIv);
-    G.autoIv=setInterval(doSpin,[1000,700,450,260][Math.min(G.upg.fastRoll,3)]);
-  }
-}
+function restartAuto(){if(G.autoOn){clearInterval(G.autoIv);G.autoIv=setInterval(doSpin,[1000,700,450,260][Math.min(G.upg.fastRoll,3)]);}}
 
 function buyUpg(id){
   const def=UPG.find(u=>u.id===id),lv=G.upg[id];
@@ -877,13 +878,15 @@ function refreshStats(){
   document.getElementById('sTok').textContent=G.tokens;
   document.getElementById('sSpin').textContent=G.spins;
   document.getElementById('sRare').textContent=G.rares;
-  const lk=getTotalLuck();
-  const lkTxt=(G.isOwner&&G.ownerLuck999)?'999999999999999×':lk.toFixed(1)+'×';
+  const brk=getLuckBreakdown();
+  const lk=brk.final;
+  const lkTxt=G.ownerLuckOn?'99999999×':lk.toFixed(1)+'×';
   document.getElementById('sLuck').textContent=lkTxt;
-  const isHighLuck=(G.isOwner&&G.ownerLuck999)||G.bonusLuck>=3||lk>2;
-  document.getElementById('scLuck').classList.toggle('luck-active',isHighLuck);
+  const scLuck=document.getElementById('scLuck');
+  scLuck.className='sc'+(G.ownerLuckOn?' lmax':lk>=3?' lhigh':'');
   document.getElementById('sSlots').textContent=1+G.upg.doubleRoll;
   document.getElementById('spLbl').textContent=['1×','1.4×','2.2×','3.8×'][Math.min(G.upg.fastRoll,3)];
+  if(G.isOwner)updateOwnerUI();
 }
 
 function refreshUpg(){
@@ -901,10 +904,10 @@ function refreshUpg(){
   });
 }
 
-// ══════════════════════════════════════
+// ══════════════════════════
 // LEADERBOARD
-// ══════════════════════════════════════
-const MEDALS=['🥇','🥈','🥉','4','Ayam ='];
+// ══════════════════════════
+const MEDALS=['🥇','🥈','🥉','4️⃣','5️⃣'];
 async function loadLB(){
   const c=document.getElementById('lbCont');
   c.innerHTML='<div style="color:var(--muted);font-size:11px;text-align:center;padding:10px">Loading…</div>';
@@ -916,11 +919,12 @@ async function loadLB(){
     const r=row.best_block?.rarity,b=row.best_block?.block;
     const col=RCOLS[r?.id]||'#9090b0';
     const d=document.createElement('div');d.className='lbrow';
-    d.innerHTML=`<div class="lbrank">${MEDALS[i]}</div>
+    d.innerHTML=`<div class="lbrank">${MEDALS[i]||i+1}</div>
       <div class="lbname">${esc(row.username||'?')}</div>
       <div class="lbblock" style="background:${col}18;color:${col};border:1px solid ${col}28">
         ${b?.i||''} ${esc(b?.n||'—')} · ${esc(r?.name||'—')}
       </div>
+      <div class="lbspin">🔄${Number(row.spins||0).toLocaleString()}</div>
       <div class="lbsc">${(row.best_score||0).toLocaleString()}</div>`;
     c.appendChild(d);
   });
