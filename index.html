@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>RNG Spinner</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#080810;--bg2:#0f0f1a;--bg3:#161625;--card:#1a1a2c;--bd:#252540;
+  --acc:#7c6dfa;--acc2:#a78bfa;--text:#e0e0f0;--muted:#5a5a80;
+  --ok:#4ade80;--err:#f87171;--gold:#f4c430;--owner:#ff6b35;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh}
+
+/* ── AUTH ── */
+#authPage{min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 50% -10%,#1c1050,var(--bg) 65%)}
+.abox{background:var(--card);border:1px solid var(--bd);border-radius:22px;
+  padding:40px 36px;width:360px;box-shadow:0 0 90px #7c6dfa16}
+.alogo{text-align:center;font-size:46px;margin-bottom:4px}
+.atitle{text-align:center;font-size:22px;font-weight:700;margin-bottom:2px}
+.asub{text-align:center;font-size:12px;color:var(--muted);margin-bottom:26px}
+.tabs{display:flex;border-radius:11px;overflow:hidden;border:1px solid var(--bd);margin-bottom:22px}
+.tab{flex:1;padding:10px;background:none;color:var(--muted);border:none;cursor:pointer;font-size:13px;font-weight:500;transition:.2s}
+.tab.on{background:var(--acc);color:#fff}
+.fg{margin-bottom:13px}
+.fg label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px;font-weight:500}
+.fg input{width:100%;padding:10px 13px;border-radius:9px;border:1px solid var(--bd);background:var(--bg3);color:var(--text);font-size:14px;outline:none;transition:border .2s}
+.fg input:focus{border-color:var(--acc);box-shadow:0 0 0 3px #7c6dfa1a}
+.fg .hint{font-size:10px;color:var(--muted);margin-top:4px}
+.abtn{width:100%;padding:12px;border-radius:10px;border:none;background:var(--acc);color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;transition:opacity .15s,transform .1s}
+.abtn:hover{opacity:.86}.abtn:active{transform:scale(.98)}.abtn:disabled{opacity:.38;cursor:not-allowed}
+.amsg{margin-top:11px;font-size:12px;text-align:center;min-height:16px}
+.amsg.err{color:var(--err)}.amsg.ok{color:var(--ok)}
+
+/* ── GAME ── */
+#gamePage{display:none;max-width:970px;margin:0 auto;padding:12px}
+.nav{display:flex;justify-content:space-between;align-items:center;
+  padding:9px 15px;background:var(--card);border-radius:12px;border:1px solid var(--bd);margin-bottom:10px;position:relative}
+.nlogo{font-size:16px;font-weight:700}
+.nright{display:flex;align-items:center;gap:10px}
+.nuser{font-size:12px;color:var(--muted)}.nuser b{color:var(--acc2)}
+.nuser b.owner{color:var(--owner)}
+.sdot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--ok);margin-left:5px;animation:dp 2.5s infinite;vertical-align:middle}
+@keyframes dp{0%,100%{opacity:1}50%{opacity:.15}}
+.lgbtn{padding:5px 12px;border-radius:7px;border:1px solid var(--bd);background:none;color:var(--muted);font-size:11px;cursor:pointer;transition:.2s}
+.lgbtn:hover{border-color:var(--err);color:var(--err)}
+
+/* ── REDEEM BUTTON (pojok kanan atas nav) ── */
+#redeemBtn{position:relative;background:linear-gradient(135deg,#2a1a00,#1a1000);border:1px solid var(--gold);
+  border-radius:9px;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:6px;
+  font-size:12px;font-weight:600;color:var(--gold);transition:.2s}
+#redeemBtn:hover{background:linear-gradient(135deg,#3d2800,#2a1800);box-shadow:0 0 14px #f4c43040}
+#redeemBtn .rn{font-size:16px}
+#redeemBtn .rbadge{position:absolute;top:-5px;right:-5px;background:var(--err);color:#fff;
+  font-size:9px;font-weight:700;border-radius:50%;width:16px;height:16px;
+  display:flex;align-items:center;justify-content:center}
+
+/* ── REDEEM MODAL ── */
+#redeemModal{display:none;position:fixed;inset:0;background:#00000088;z-index:999;
+  align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+#redeemModal.open{display:flex}
+.rmodal{background:var(--card);border:1px solid var(--gold);border-radius:18px;
+  padding:28px 26px;width:340px;box-shadow:0 0 60px #f4c43022}
+.rmodal h3{font-size:17px;font-weight:700;color:var(--gold);margin-bottom:4px;text-align:center}
+.rmodal p{font-size:12px;color:var(--muted);text-align:center;margin-bottom:18px}
+.rmodal input{width:100%;padding:10px 13px;border-radius:9px;border:1px solid var(--bd);
+  background:var(--bg3);color:var(--text);font-size:14px;outline:none;margin-bottom:10px;
+  letter-spacing:.05em;transition:border .2s}
+.rmodal input:focus{border-color:var(--gold)}
+.rmodal-btns{display:flex;gap:8px}
+.rbtn-cancel{flex:1;padding:10px;border-radius:9px;border:1px solid var(--bd);background:transparent;color:var(--muted);font-size:13px;cursor:pointer}
+.rbtn-ok{flex:2;padding:10px;border-radius:9px;border:none;background:var(--gold);color:#000;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s}
+.rbtn-ok:hover{opacity:.85}
+.rmsg{font-size:12px;text-align:center;margin-bottom:10px;min-height:16px}
+.rmsg.ok{color:var(--ok)}.rmsg.err{color:var(--err)}
+
+/* ── OWNER PANEL ── */
+#ownerPanel{display:none;background:linear-gradient(135deg,#100800,#180e00);
+  border:1px solid var(--owner);border-radius:14px;padding:14px;margin-bottom:10px}
+.owner-title{font-size:13px;font-weight:700;color:var(--owner);margin-bottom:12px;
+  display:flex;align-items:center;gap:8px}
+.owner-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:560px){.owner-grid{grid-template-columns:1fr}}
+.ocard{background:#1a0e00;border:1px solid #3a2500;border-radius:10px;padding:11px 13px}
+.ocard h5{font-size:11px;font-weight:600;color:var(--owner);margin-bottom:8px}
+.ocard label{font-size:10px;color:var(--muted);display:block;margin-bottom:4px}
+.ocard input{width:100%;padding:7px 9px;border-radius:7px;border:1px solid #3a2500;
+  background:#0f0800;color:var(--text);font-size:12px;outline:none;margin-bottom:6px;transition:border .2s}
+.ocard input:focus{border-color:var(--owner)}
+.obtn{padding:7px 14px;border-radius:7px;border:none;background:var(--owner);color:#fff;
+  font-size:12px;font-weight:600;cursor:pointer;transition:opacity .15s;width:100%;margin-top:2px}
+.obtn:hover{opacity:.82}
+.obtn.toggle{background:#1a1a2c;border:1px solid var(--bd);color:var(--muted)}
+.obtn.toggle.active{background:#1a0900;border-color:var(--owner);color:var(--owner)}
+.luck-indicator{display:flex;align-items:center;gap:8px;margin-top:6px;padding:7px 10px;
+  border-radius:7px;background:#0f0800;border:1px solid #3a2500;font-size:11px}
+.luck-dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.luck-dot.on{background:var(--gold);box-shadow:0 0 8px var(--gold)}
+
+/* ── STATS ── */
+.stats{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px}
+.sc{flex:1;min-width:65px;background:var(--card);border-radius:9px;padding:9px 11px;border:1px solid var(--bd)}
+.sc .sv{font-size:19px;font-weight:700}.sc .sk{font-size:9px;color:var(--muted);margin-top:1px}
+.sc.luck-active .sv{color:var(--gold);text-shadow:0 0 12px #f4c43088}
+
+.log{font-size:11px;color:var(--muted);min-height:15px;margin-bottom:9px;font-style:italic}
+.btnrow{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:11px}
+.gbtn{padding:8px 18px;border-radius:9px;border:1px solid var(--bd);background:var(--bg3);
+  font-size:13px;font-weight:600;cursor:pointer;color:var(--text);transition:.15s}
+.gbtn:hover{border-color:var(--acc)}
+.gbtn.aon{background:#0d3318;color:var(--ok);border-color:var(--ok)}
+.gbtn.pri{background:var(--acc);color:#fff;border-color:var(--acc)}
+.gbtn.pri:hover{opacity:.88}
+
+/* ── SLOTS ── */
+.slots{display:flex;gap:8px;flex-wrap:wrap;min-height:108px;align-items:center;
+  justify-content:center;margin-bottom:12px;padding:8px;border-radius:13px;
+  border:1px solid var(--bd);background:var(--bg2)}
+.slot{width:94px;height:94px;border-radius:13px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;position:relative;overflow:hidden;
+  border:2px solid transparent;will-change:transform;transition:transform .18s}
+.slot.win{transform:scale(1.11)}
+.slot canvas{position:absolute;inset:0;pointer-events:none}
+.slot .si{font-size:25px;position:relative;z-index:2}
+.slot .sn{font-size:10px;font-weight:600;margin-top:2px;position:relative;z-index:2}
+.slot .sr{font-size:9px;position:relative;z-index:2;opacity:.85}
+.slot .sv2{font-size:9px;position:relative;z-index:2;opacity:.6}
+
+/* ── PANELS ── */
+.tcol{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+@media(max-width:560px){.tcol{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:13px}
+.ptitle{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.07em;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.ptitle button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:11px;padding:0}
+.ptitle button:hover{color:var(--text)}
+.bdisp{display:flex;align-items:center;gap:11px;background:var(--bg2);
+  border-radius:9px;padding:9px 11px;border:1px solid var(--bd)}
+.bibox{width:50px;height:50px;border-radius:9px;display:flex;align-items:center;
+  justify-content:center;font-size:25px;position:relative;overflow:hidden;flex-shrink:0;border:2px solid var(--bd)}
+.bibox canvas{position:absolute;inset:0;pointer-events:none}
+.bibox .bi{position:relative;z-index:2}
+.lbrow{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:8px;
+  margin-bottom:5px;background:var(--bg2);border:1px solid var(--bd)}
+.lbrank{font-size:15px;font-weight:700;width:22px;text-align:center;flex-shrink:0}
+.lbname{flex:1;font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lbblock{font-size:10px;padding:3px 7px;border-radius:5px;font-weight:600;flex-shrink:0}
+.lbsc{font-size:10px;color:var(--muted);flex-shrink:0}
+
+/* ── UPGRADES ── */
+.ugrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:6px}
+.uc{background:var(--bg2);border-radius:8px;padding:9px 10px;border:1px solid var(--bd)}
+.uc h4{font-size:11px;font-weight:600;margin-bottom:3px}
+.uc .ud{font-size:9px;color:var(--muted);margin-bottom:5px;line-height:1.3}
+.uc .ul{font-size:9px;color:var(--muted);margin-bottom:4px}
+.ubtn{width:100%;padding:5px 0;font-size:10px;border-radius:5px;border:1px solid var(--bd);
+  background:var(--bg3);cursor:pointer;color:var(--text);transition:.15s}
+.ubtn:hover:not(:disabled){background:var(--acc);color:#fff;border-color:var(--acc)}
+.ubtn:disabled{opacity:.3;cursor:not-allowed}
+
+/* ── ANIMATIONS ── */
+@keyframes drop{0%{opacity:0;transform:translateY(-22px) scale(.85)}65%{transform:translateY(3px) scale(1.04)}100%{opacity:1;transform:none}}
+@keyframes wpop{0%{transform:scale(1.11)}42%{transform:scale(1.21)}100%{transform:scale(1.11)}}
+@keyframes luckPulse{0%,100%{box-shadow:0 0 8px var(--gold)}50%{box-shadow:0 0 22px var(--gold),0 0 40px #f4c43055}}
+@keyframes ownerGlow{0%,100%{border-color:var(--owner)}50%{border-color:#ffaa66;box-shadow:0 0 18px #ff6b3544}}
+@keyframes giftBounce{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+</style>
+</head>
+<body>
+
+<!-- ══ AUTH ══ -->
+<div id="authPage">
+  <div class="abox">
+    <div class="alogo">🎰</div>
+    <div class="atitle">RNG Spinner</div>
+    <div class="asub">Username &amp; password — tanpa email</div>
+    <div class="tabs">
+      <button class="tab on" id="tLogin" onclick="switchTab('login')">Login</button>
+      <button class="tab"    id="tReg"   onclick="switchTab('reg')">Register</button>
+    </div>
+    <div id="fLogin">
+      <div class="fg"><label>Username</label>
+        <input id="lU" type="text" placeholder="spinmaster99" autocomplete="username"
+          onkeydown="if(event.key==='Enter')document.getElementById('lP').focus()"></div>
+      <div class="fg"><label>Password</label>
+        <input id="lP" type="password" placeholder="••••••••" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="abtn" id="btnL" onclick="doLogin()">▶ Masuk</button>
+    </div>
+    <div id="fReg" style="display:none">
+      <div class="fg"><label>Username</label>
+        <input id="rU" type="text" placeholder="pemain_baru" maxlength="20" autocomplete="off"
+          onkeydown="if(event.key==='Enter')document.getElementById('rP').focus()">
+        <div class="hint">2–20 karakter · 1 device bisa buat banyak akun berbeda</div></div>
+      <div class="fg"><label>Password</label>
+        <input id="rP" type="password" placeholder="Min 6 karakter" autocomplete="new-password"
+          onkeydown="if(event.key==='Enter')doRegister()"></div>
+      <button class="abtn" id="btnR" onclick="doRegister()">✦ Buat Akun</button>
+    </div>
+    <div class="amsg" id="amsg"></div>
+  </div>
+</div>
+
+<!-- ══ REDEEM MODAL ══ -->
+<div id="redeemModal">
+  <div class="rmodal">
+    <div style="text-align:center;font-size:36px;margin-bottom:8px">🎁</div>
+    <h3>Redeem Code</h3>
+    <p>Masukkan kode untuk mendapatkan hadiah eksklusif</p>
+    <div class="rmsg" id="rmsg"></div>
+    <input id="redeemInput" type="text" placeholder="Masukkan kode..." autocomplete="off"
+      style="text-transform:uppercase" onkeydown="if(event.key==='Enter')doRedeem()">
+    <div class="rmodal-btns">
+      <button class="rbtn-cancel" onclick="closeRedeem()">Batal</button>
+      <button class="rbtn-ok" onclick="doRedeem()">🎁 Redeem</button>
+    </div>
+    <div id="redeemHistory" style="margin-top:14px;font-size:10px;color:var(--muted)"></div>
+  </div>
+</div>
+
+<!-- ══ GAME ══ -->
+<div id="gamePage">
+
+  <!-- NAV -->
+  <div class="nav">
+    <div class="nlogo">🎰 RNG Spinner</div>
+    <div class="nright">
+      <div class="nuser">Player: <b id="navU">—</b><span class="sdot"></span></div>
+      <!-- Gift / Redeem Button -->
+      <button id="redeemBtn" onclick="openRedeem()" title="Redeem Code">
+        <span class="rn" style="animation:giftBounce 2s infinite">🎁</span>
+        <span>Redeem</span>
+        <span class="rbadge" id="newBadge" style="display:none">!</span>
+      </button>
+      <button class="lgbtn" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- OWNER PANEL (hidden by default, revealed by code) -->
+  <div id="ownerPanel" style="animation:ownerGlow 2s infinite">
+    <div class="owner-title">
+      <span style="font-size:20px">👑</span>
+      Owner Panel — Mode Eksklusif
+    </div>
+    <div class="owner-grid">
+      <!-- Luck 999x Toggle -->
+      <div class="ocard">
+        <h5>🍀 Global Luck 999×</h5>
+        <label>Aktifkan luck 999× untuk akun ini</label>
+        <div class="luck-indicator" id="luckInd">
+          <div class="luck-dot" id="luckDot"></div>
+          <span id="luckIndText">Luck Normal</span>
+        </div>
+        <button class="obtn toggle" id="luckToggle" onclick="ownerToggleLuck()">
+          Aktifkan Luck 999×
+        </button>
+      </div>
+      <!-- Give Block Aura -->
+      <div class="ocard">
+        <h5>✨ Give Block Aura</h5>
+        <label>Username penerima</label>
+        <input id="giveTarget" type="text" placeholder="username pemain">
+        <label>Block & Rarity</label>
+        <input id="giveBlock" type="text" placeholder="cth: Phoenix · Divine">
+        <button class="obtn" onclick="ownerGiveBlock()">✨ Berikan Block</button>
+        <div id="giveMsg" style="font-size:10px;margin-top:5px;color:var(--ok)"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="sc"><div class="sv" id="sTok">0</div><div class="sk">🪙 Token</div></div>
+    <div class="sc"><div class="sv" id="sSpin">0</div><div class="sk">🔄 Spin</div></div>
+    <div class="sc"><div class="sv" id="sRare">0</div><div class="sk">✨ Rare+</div></div>
+    <div class="sc" id="scLuck"><div class="sv" id="sLuck">1.0×</div><div class="sk">🍀 Luck</div></div>
+    <div class="sc"><div class="sv" id="sSlots">1</div><div class="sk">🎰 Slots</div></div>
+  </div>
+
+  <div class="log" id="logLine">Klik Spin untuk mulai!</div>
+  <div class="btnrow">
+    <button class="gbtn pri" onclick="doSpin()">▶ Spin (Gratis)</button>
+    <button class="gbtn" id="autoBtn" onclick="toggleAuto()">⚡ Auto Spin</button>
+    <span style="font-size:11px;color:var(--muted)">Speed: <b id="spLbl">1×</b></span>
+  </div>
+
+  <div class="slots" id="slotsArea"></div>
+
+  <div class="tcol">
+    <div class="panel">
+      <div class="ptitle">🏆 Best Block Kamu</div>
+      <div class="bdisp" id="bdisp">
+        <div class="bibox" id="bibox"><canvas id="bcv" width="50" height="50"></canvas><span class="bi" id="bicon">🎲</span></div>
+        <div>
+          <div id="bname" style="font-size:13px;font-weight:700;color:var(--muted)">Belum ada</div>
+          <div id="brar"  style="font-size:10px;color:var(--muted)">Spin dulu!</div>
+          <div id="broll" style="font-size:9px;color:var(--muted)"></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">📊 Leaderboard Top 5
+        <button onclick="loadLB()">↻ Refresh</button>
+      </div>
+      <div id="lbCont"><div style="color:var(--muted);font-size:11px;text-align:center;padding:10px">Loading…</div></div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-bottom:14px">
+    <div class="ptitle">⚙️ Upgrades</div>
+    <div class="ugrid" id="ugrid"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+// CONFIG — GANTI DENGAN MILIKMU
+// ══════════════════════════════════════
+const SUPA_URL = 'https://ynksdrtqlwgnbmsydohm.supabase.co';
+const SUPA_KEY = 'sb_publishable_c3ChXqxrASbZa5mu6YvZvg_ghZysUrG';
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+// ══════════════════════════════════════
+// REDEEM CODES
+// ══════════════════════════════════════
+const CODES = {
+  'BETHEOWNER00': {
+    type: 'owner',
+    desc: '👑 Owner Panel diaktifkan!',
+    once: true,
+  },
+  'BETATESTING111': {
+    type: 'luck_boost',
+    value: 3,       // luck multiplier bonus
+    duration: null, // permanent until logout
+    desc: '🍀 Luck 3× diaktifkan! (berlaku hingga logout)',
+    once: true,
+  },
+};
+
+// ══════════════════════════════════════
+// RARITIES — bobot yang benar-benar mempengaruhi drop
+// Luck tinggi = rare+ naik drastis, common turun
+// ══════════════════════════════════════
+const RAR = [
+  // id, name, score, baseWeight, maxRoll, bg, border, textColor, particles, speed
+  {id:'common',    name:'Common',    score:1,     w:5000, maxR:10,   bg:'#111118',bd:'#3a3a55',tc:'#9090b0',pN:4, sp:.5},
+  {id:'uncommon',  name:'Uncommon',  score:5,     w:2000, maxR:50,   bg:'#061a0e',bd:'#1a6b30',tc:'#4ade80',pN:7, sp:.8},
+  {id:'rare',      name:'Rare',      score:20,    w:800,  maxR:200,  bg:'#060e1e',bd:'#1a4db8',tc:'#60a5fa',pN:10,sp:1.1},
+  {id:'epic',      name:'Epic',      score:70,    w:250,  maxR:500,  bg:'#0e0620',bd:'#7c22c8',tc:'#c084fc',pN:14,sp:1.4},
+  {id:'legendary', name:'Legendary', score:200,   w:60,   maxR:1000, bg:'#150a00',bd:'#b85c00',tc:'#fbbf24',pN:18,sp:1.8},
+  {id:'mythic',    name:'Mythic',    score:600,   w:14,   maxR:2500, bg:'#150006',bd:'#c0142a',tc:'#fb7185',pN:22,sp:2.2},
+  {id:'divine',    name:'Divine',    score:1800,  w:3,    maxR:5000, bg:'#120014',bd:'#a01ab0',tc:'#f0abfc',pN:28,sp:2.8},
+  {id:'eternal',   name:'Eternal',   score:6000,  w:.5,   maxR:7500, bg:'#00101a',bd:'#0078a8',tc:'#67e8f9',pN:36,sp:3.5},
+  {id:'omega',     name:'OMEGA',     score:20000, w:.05,  maxR:9999, bg:'#08080f',bd:'#d0d0f0',tc:'#ffffff',pN:50,sp:5},
+];
+
+const BLK = [
+  {n:'Ember',i:'🔥',a:'fire'},{n:'Blaze',i:'🌋',a:'fire'},{n:'Inferno',i:'♨️',a:'fire'},
+  {n:'Cinder',i:'🕯️',a:'fire'},{n:'Phoenix',i:'🦅',a:'fire'},{n:'Pyro',i:'🔴',a:'fire'},
+  {n:'Frost',i:'❄️',a:'ice'},{n:'Glacier',i:'🧊',a:'ice'},{n:'Blizzard',i:'🌨️',a:'ice'},
+  {n:'Cryo',i:'💠',a:'ice'},{n:'Permafrost',i:'🏔️',a:'ice'},{n:'Aurora',i:'🌌',a:'ice'},
+  {n:'Storm',i:'⚡',a:'elec'},{n:'Thunder',i:'☁️',a:'elec'},{n:'Tempest',i:'🌪️',a:'elec'},
+  {n:'Volt',i:'🔋',a:'elec'},{n:'Surge',i:'📡',a:'elec'},{n:'Static',i:'🌀',a:'elec'},
+  {n:'Void',i:'🌑',a:'dark'},{n:'Shadow',i:'👾',a:'dark'},{n:'Specter',i:'👻',a:'dark'},
+  {n:'Nether',i:'👁️',a:'dark'},{n:'Abyss',i:'🦑',a:'dark'},{n:'Wraith',i:'🖤',a:'dark'},
+  {n:'Nova',i:'💫',a:'cosmic'},{n:'Nebula',i:'🌠',a:'cosmic'},{n:'Cosmos',i:'🌌',a:'cosmic'},
+  {n:'Pulsar',i:'⭐',a:'cosmic'},{n:'Quasar',i:'🌟',a:'cosmic'},{n:'Celestial',i:'🔯',a:'cosmic'},
+  {n:'Terra',i:'🌿',a:'nat'},{n:'Verdant',i:'🌲',a:'nat'},{n:'Bloom',i:'🌸',a:'nat'},
+  {n:'Fauna',i:'🦋',a:'nat'},{n:'Gaia',i:'🌍',a:'nat'},{n:'Grove',i:'🍀',a:'nat'},
+  {n:'Tide',i:'🌊',a:'water'},{n:'Abyssal',i:'🐙',a:'water'},{n:'Coral',i:'🪸',a:'water'},
+  {n:'Torrent',i:'💧',a:'water'},{n:'Depths',i:'🐋',a:'water'},{n:'Swell',i:'🌬️',a:'water'},
+  {n:'Solar',i:'☀️',a:'rad'},{n:'Radiant',i:'✨',a:'rad'},{n:'Prism',i:'🔮',a:'rad'},
+  {n:'Halo',i:'😇',a:'rad'},{n:'Lumina',i:'💡',a:'rad'},{n:'Gleam',i:'🌤️',a:'rad'},
+  {n:'Lunar',i:'🌙',a:'lunar'},{n:'Eclipse',i:'🌒',a:'lunar'},{n:'Selene',i:'🪐',a:'lunar'},
+  {n:'Crescent',i:'🌛',a:'lunar'},{n:'Astral',i:'🌃',a:'lunar'},{n:'Umbra',i:'🌘',a:'lunar'},
+  {n:'Crystal',i:'💎',a:'crystal'},{n:'Rune',i:'⚔️',a:'rune'},{n:'Chaos',i:'☠️',a:'chaos'},
+  {n:'Dragon',i:'🐉',a:'fire'},{n:'Titan',i:'🗿',a:'nat'},{n:'Omega',i:'🔱',a:'chaos'},
+  {n:'Nexus',i:'🧿',a:'crystal'},{n:'Apex',i:'🏆',a:'rad'},{n:'Rift',i:'🕳️',a:'dark'},
+  {n:'Zenith',i:'🌐',a:'cosmic'},
+];
+
+const AURA = {
+  fire:['#ff6600','#ff3300','#ffaa00'],ice:['#66ccff','#aaeeff','#33aaff'],
+  elec:['#ffff00','#ffcc00','#ffffff'],dark:['#8800cc','#5500aa','#cc22ff'],
+  cosmic:['#4400aa','#8800ff','#cc44ff'],nat:['#00cc44','#44ff88','#88ff44'],
+  water:['#0099ff','#00ccff','#0055cc'],rad:['#ffffff','#ffff44','#ffee00'],
+  lunar:['#aabbdd','#8899cc','#ccddf0'],crystal:['#aaeeff','#ffffff','#88ccff'],
+  rune:['#ffaa44','#ff6600','#ffee88'],chaos:['#ff00ff','#00ffff','#ff8800'],
+};
+
+const UPG = [
+  {id:'fastRoll',  label:'Fast Roll',   max:3,
+   descs:['Auto 30% lebih cepat','Auto 55% lebih cepat','Auto speed max'],costs:[5,14,28]},
+  {id:'doubleRoll',label:'Double Roll', max:2,
+   descs:['2 slot per spin','3 slot per spin'],costs:[10,25]},
+  {id:'luckRoll',  label:'Luck Roll',   max:50,
+   descs:Array.from({length:50},(_,i)=>`+${(i+1)*20}% peluang rare`),
+   costs:Array.from({length:50},(_,i)=>Math.ceil(4+Math.pow(i,1.6)*.55))},
+];
+
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+let G = {
+  tokens:0, spins:0, rares:0, bestBlock:null,
+  autoOn:false, autoIv:null,
+  upg:{fastRoll:0, doubleRoll:0, luckRoll:0},
+  // Special states
+  isOwner: false,        // unlocked by BETHEOWNER00
+  ownerLuck999: false,   // owner-toggled 999x luck
+  bonusLuck: 0,          // additive luck multiplier from codes (e.g. 3 from betatesting111)
+  redeemedCodes: [],     // list of used codes
+};
+let CU = null;
+let saveQ = null, bestStop = null, slotStops = [];
+
+const RCOLS = {common:'#9090b0',uncommon:'#4ade80',rare:'#60a5fa',epic:'#c084fc',
+  legendary:'#fbbf24',mythic:'#fb7185',divine:'#f0abfc',eternal:'#67e8f9',omega:'#fff'};
+
+// ══════════════════════════════════════
+// AUTH UI
+// ══════════════════════════════════════
+function switchTab(t){
+  document.getElementById('tLogin').classList.toggle('on',t==='login');
+  document.getElementById('tReg').classList.toggle('on',t==='reg');
+  document.getElementById('fLogin').style.display=t==='login'?'':'none';
+  document.getElementById('fReg').style.display=t==='reg'?'':'none';
+  msg('','');
+}
+function msg(m,c){const e=document.getElementById('amsg');e.textContent=m;e.className='amsg'+(c?' '+c:'');}
+function setBtn(id,t,d){const b=document.getElementById(id);b.textContent=t;b.disabled=d;}
+
+async function doLogin(){
+  const u=document.getElementById('lU').value.trim();
+  const p=document.getElementById('lP').value;
+  if(!u||!p){msg('Isi username & password','err');return;}
+  setBtn('btnL','Masuk…',true);msg('','');
+  try{
+    const{data,error}=await sb.rpc('login_player',{p_username:u,p_password:p});
+    if(error){msg('Error: '+error.message,'err');setBtn('btnL','▶ Masuk',false);return;}
+    if(!data||!data.ok){msg(data?.msg||'Login gagal','err');setBtn('btnL','▶ Masuk',false);return;}
+    localStorage.setItem('rng_uid',data.id);
+    enterGame(data);
+  }catch(e){msg('Koneksi gagal. Cek SUPA_URL & SUPA_KEY','err');}
+  setBtn('btnL','▶ Masuk',false);
+}
+
+async function doRegister(){
+  const u=document.getElementById('rU').value.trim();
+  const p=document.getElementById('rP').value;
+  if(!u||!p){msg('Isi semua field','err');return;}
+  setBtn('btnR','Mendaftar…',true);msg('','');
+  try{
+    const{data,error}=await sb.rpc('register_player',{p_username:u,p_password:p});
+    if(error){msg('Error: '+error.message,'err');setBtn('btnR','✦ Buat Akun',false);return;}
+    if(!data||!data.ok){msg(data?.msg||'Gagal','err');setBtn('btnR','✦ Buat Akun',false);return;}
+    msg('✅ Akun "'+data.username+'" berhasil! Silakan login.','ok');
+    switchTab('login');
+    document.getElementById('lU').value=u;
+  }catch(e){msg('Koneksi gagal.','err');}
+  setBtn('btnR','✦ Buat Akun',false);
+}
+
+window.addEventListener('load',async()=>{
+  const id=localStorage.getItem('rng_uid');
+  if(!id)return;
+  document.getElementById('authPage').style.display='none';
+  document.getElementById('gamePage').style.display='block';
+  document.getElementById('logLine').textContent='Memuat data...';
+  try{
+    const{data,error}=await sb.from('players')
+      .select('id,username,tokens,spins,rares,upgrades,best_block,best_score')
+      .eq('id',id).single();
+    if(error||!data){
+      const cache=localStorage.getItem('rng_cache');
+      if(cache){enterGame(JSON.parse(cache));return;}
+      localStorage.removeItem('rng_uid');
+      document.getElementById('gamePage').style.display='none';
+      document.getElementById('authPage').style.display='flex';
+      return;
+    }
+    enterGame(data);
+  }catch(e){
+    const cache=localStorage.getItem('rng_cache');
+    if(cache)enterGame(JSON.parse(cache));
+    else{localStorage.removeItem('rng_uid');document.getElementById('gamePage').style.display='none';document.getElementById('authPage').style.display='flex';}
+  }
+});
+
+function enterGame(d){
+  CU={id:d.id,username:d.username};
+  document.getElementById('navU').textContent=d.username;
+  const rawUpg=(d.upgrades&&typeof d.upgrades==='object')?d.upgrades:{};
+  G.upg={
+    fastRoll:  Math.max(0,Number(rawUpg.fastRoll) ||0),
+    doubleRoll:Math.max(0,Number(rawUpg.doubleRoll)||0),
+    luckRoll:  Math.max(0,Number(rawUpg.luckRoll)  ||0),
+  };
+  G.tokens=Math.max(0,Number(d.tokens)||0);
+  G.spins =Math.max(0,Number(d.spins) ||0);
+  G.rares =Math.max(0,Number(d.rares) ||0);
+  G.bestBlock=d.best_block||null;
+  // Load saved codes & owner state from localStorage
+  const saved=JSON.parse(localStorage.getItem('rng_perks_'+CU.id)||'{}');
+  G.isOwner=saved.isOwner||false;
+  G.ownerLuck999=saved.ownerLuck999||false;
+  G.bonusLuck=saved.bonusLuck||0;
+  G.redeemedCodes=saved.redeemedCodes||[];
+
+  if(G.bestBlock)renderBest(G.bestBlock);
+  if(G.isOwner)showOwnerPanel();
+  document.getElementById('authPage').style.display='none';
+  document.getElementById('gamePage').style.display='block';
+  refreshStats();refreshUpg();loadLB();
+  updateOwnerUI();
+  cacheLocal();
+}
+
+async function doLogout(){
+  if(G.autoOn)toggleAuto();
+  await saveNow();
+  localStorage.removeItem('rng_uid');localStorage.removeItem('rng_cache');
+  // Keep perks tied to account id so they persist on re-login
+  CU=null;
+  G={tokens:0,spins:0,rares:0,bestBlock:null,autoOn:false,autoIv:null,
+     upg:{fastRoll:0,doubleRoll:0,luckRoll:0},
+     isOwner:false,ownerLuck999:false,bonusLuck:0,redeemedCodes:[]};
+  stopAllAuras();
+  document.getElementById('slotsArea').innerHTML='';
+  document.getElementById('ownerPanel').style.display='none';
+  ['bibox','bicon','bname','brar','broll'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(id==='bicon')el.textContent='🎲';
+    else if(id==='bname'){el.textContent='Belum ada';el.style.color='var(--muted)';}
+    else if(id==='brar'){el.textContent='Spin dulu!';el.style.color='var(--muted)';}
+    else if(id==='broll')el.textContent='';
+    else if(id==='bibox')el.style.cssText='';
+  });
+  document.getElementById('gamePage').style.display='none';
+  document.getElementById('authPage').style.display='flex';
+  msg('Berhasil logout!','ok');
+}
+
+// ══════════════════════════════════════
+// SAVE / CACHE
+// ══════════════════════════════════════
+function scheduleSave(){clearTimeout(saveQ);saveQ=setTimeout(saveNow,2500);}
+async function saveNow(){
+  if(!CU)return;
+  cacheLocal();
+  savePerks();
+  const{error}=await sb.rpc('save_player',{
+    p_id:CU.id,p_tokens:G.tokens,p_spins:G.spins,p_rares:G.rares,
+    p_upgrades:G.upg,p_best_block:G.bestBlock,
+    p_best_score:G.bestBlock?blockScore(G.bestBlock):0
+  });
+  if(error)console.warn('Save failed:',error.message);
+}
+function cacheLocal(){
+  if(!CU)return;
+  try{localStorage.setItem('rng_cache',JSON.stringify({
+    id:CU.id,username:CU.username,tokens:G.tokens,spins:G.spins,rares:G.rares,
+    upgrades:G.upg,best_block:G.bestBlock,best_score:G.bestBlock?blockScore(G.bestBlock):0
+  }));}catch(_){}
+}
+function savePerks(){
+  if(!CU)return;
+  try{localStorage.setItem('rng_perks_'+CU.id,JSON.stringify({
+    isOwner:G.isOwner,ownerLuck999:G.ownerLuck999,
+    bonusLuck:G.bonusLuck,redeemedCodes:G.redeemedCodes
+  }));}catch(_){}
+}
+window.addEventListener('beforeunload',()=>saveNow());
+document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow();});
+
+// ══════════════════════════════════════
+// REDEEM SYSTEM
+// ══════════════════════════════════════
+function openRedeem(){
+  document.getElementById('redeemModal').classList.add('open');
+  document.getElementById('redeemInput').value='';
+  document.getElementById('rmsg').textContent='';
+  document.getElementById('rmsg').className='rmsg';
+  // Show history
+  const h=document.getElementById('redeemHistory');
+  if(G.redeemedCodes.length){
+    h.innerHTML='<b>Sudah diredeem:</b> '+G.redeemedCodes.map(c=>`<span style="color:var(--ok)">${c}</span>`).join(', ');
+  } else {
+    h.textContent='';
+  }
+  setTimeout(()=>document.getElementById('redeemInput').focus(),100);
+}
+function closeRedeem(){
+  document.getElementById('redeemModal').classList.remove('open');
+}
+// Close on backdrop click
+document.getElementById('redeemModal').addEventListener('click',function(e){
+  if(e.target===this)closeRedeem();
+});
+
+function doRedeem(){
+  const raw=document.getElementById('redeemInput').value.trim().toUpperCase();
+  const rmsg=document.getElementById('rmsg');
+
+  if(!raw){rmsg.textContent='Masukkan kode!';rmsg.className='rmsg err';return;}
+  if(!CU){rmsg.textContent='Login dulu!';rmsg.className='rmsg err';return;}
+
+  const code=CODES[raw];
+  if(!code){rmsg.textContent='❌ Kode tidak valid';rmsg.className='rmsg err';return;}
+
+  if(code.once&&G.redeemedCodes.includes(raw)){
+    rmsg.textContent='⚠️ Kode sudah pernah digunakan';rmsg.className='rmsg err';return;
+  }
+
+  // Apply effect
+  applyCode(raw,code);
+  G.redeemedCodes.push(raw);
+  savePerks();
+
+  rmsg.textContent='✅ '+code.desc;rmsg.className='rmsg ok';
+  document.getElementById('redeemInput').value='';
+  // Update history
+  const h=document.getElementById('redeemHistory');
+  h.innerHTML='<b>Sudah diredeem:</b> '+G.redeemedCodes.map(c=>`<span style="color:var(--ok)">${c}</span>`).join(', ');
+
+  refreshStats();
+}
+
+function applyCode(raw,code){
+  if(code.type==='owner'){
+    G.isOwner=true;
+    showOwnerPanel();
+    document.getElementById('navU').classList.add('owner');
+  } else if(code.type==='luck_boost'){
+    G.bonusLuck=code.value;
+    refreshStats();
+    document.getElementById('logLine').textContent='🍀 Luck 3× aktif dari kode beta!';
+  }
+}
+
+// ══════════════════════════════════════
+// OWNER PANEL
+// ══════════════════════════════════════
+function showOwnerPanel(){
+  document.getElementById('ownerPanel').style.display='block';
+  document.getElementById('navU').classList.add('owner');
+  document.getElementById('newBadge').style.display=G.isOwner?'':'none';
+  updateOwnerUI();
+}
+
+function updateOwnerUI(){
+  if(!G.isOwner)return;
+  const btn=document.getElementById('luckToggle');
+  const dot=document.getElementById('luckDot');
+  const txt=document.getElementById('luckIndText');
+  if(G.ownerLuck999){
+    btn.textContent='🍀 Nonaktifkan Luck 999×';
+    btn.classList.add('active');
+    dot.classList.add('on');
+    txt.textContent='LUCK 999× AKTIF!';
+    txt.style.color='var(--gold)';
+    document.getElementById('scLuck').style.animation='luckPulse 1.5s infinite';
+  } else {
+    btn.textContent='Aktifkan Luck 999×';
+    btn.classList.remove('active');
+    dot.classList.remove('on');
+    txt.textContent='Luck Normal';
+    txt.style.color='';
+    document.getElementById('scLuck').style.animation='';
+  }
+  refreshStats();
+}
+
+function ownerToggleLuck(){
+  if(!G.isOwner)return;
+  G.ownerLuck999=!G.ownerLuck999;
+  savePerks();
+  updateOwnerUI();
+  document.getElementById('logLine').textContent=G.ownerLuck999?
+    '👑 Luck 999× AKTIF! Setiap spin hampir pasti langka!':
+    'Luck 999× dinonaktifkan.';
+}
+
+async function ownerGiveBlock(){
+  if(!G.isOwner)return;
+  const target=document.getElementById('giveTarget').value.trim();
+  const blockDesc=document.getElementById('giveBlock').value.trim();
+  const gmsg=document.getElementById('giveMsg');
+  if(!target||!blockDesc){gmsg.style.color='var(--err)';gmsg.textContent='Isi username dan block!';return;}
+
+  // Find target player
+  const{data,error}=await sb.from('players').select('id,best_block,best_score').ilike('username',target).single();
+  if(error||!data){gmsg.style.color='var(--err)';gmsg.textContent='❌ Username tidak ditemukan';return;}
+
+  // Parse blockDesc → find matching block or create a special one
+  const parts=blockDesc.split('·').map(s=>s.trim());
+  const blockName=parts[0]||'Phoenix';
+  const rarName=(parts[1]||'divine').toLowerCase();
+  const rarity=RAR.find(r=>r.id===rarName||r.name.toLowerCase()===rarName)||RAR[6]; // default divine
+  const block=BLK.find(b=>b.n.toLowerCase()===blockName.toLowerCase())||BLK[4]; // default Phoenix
+  const roll=Math.floor(Math.random()*rarity.maxR)+1;
+  const giftBlock={rarity,block,roll};
+  const giftScore=blockScore(giftBlock);
+
+  // Only replace if better than current best
+  const newBest=(!data.best_block||giftScore>data.best_score)?giftBlock:JSON.parse(JSON.stringify(data.best_block));
+  const newScore=(!data.best_block||giftScore>data.best_score)?giftScore:data.best_score;
+
+  await sb.from('players').update({best_block:newBest,best_score:newScore,updated_at:new Date().toISOString()}).eq('id',data.id);
+  gmsg.style.color='var(--ok)';
+  gmsg.textContent=`✅ Block ${block.i} ${block.n} (${rarity.name}) diberikan ke ${target}!`;
+  document.getElementById('giveTarget').value='';
+  document.getElementById('giveBlock').value='';
+  setTimeout(()=>{gmsg.textContent='';},4000);
+}
+
+// ══════════════════════════════════════
+// LUCK SYSTEM — properly weighted RNG
+// ══════════════════════════════════════
+function getTotalLuck(){
+  // Base from upgrades
+  let lk = 1 + G.upg.luckRoll * 0.2;
+  // Bonus from redeem code (e.g. 3x)
+  if(G.bonusLuck > 0) lk = Math.max(lk, G.bonusLuck);
+  // Owner 999x override
+  if(G.isOwner && G.ownerLuck999) lk = 999;
+  return lk;
+}
+
+function pickRar(){
+  const lk = getTotalLuck();
+
+  // With luck, rare+ weights are multiplied, common/uncommon divided
+  // This makes high luck actually feel powerful
+  const pool = RAR.map((r, i) => {
+    let w = r.w;
+    if(i === 0) w = Math.max(1, r.w / (lk * 0.8));        // common drops hard
+    else if(i === 1) w = Math.max(1, r.w / (lk * 0.4));   // uncommon drops medium
+    else w = r.w * lk;                                      // rare+ rises
+    return {r, w};
+  });
+
+  let tot = pool.reduce((a,b)=>a+b.w, 0);
+  let rnd = Math.random() * tot;
+  for(const {r,w} of pool){ rnd -= w; if(rnd <= 0) return r; }
+  return RAR[0];
+}
+
+function makeBlock(){
+  const r=pickRar(), b=BLK[Math.floor(Math.random()*BLK.length)];
+  return{rarity:r, block:b, roll:Math.floor(Math.random()*r.maxR)+1};
+}
+function blockScore(b){return b.rarity.score*100000+b.roll;}
+
+// ══════════════════════════════════════
+// AURA ENGINE
+// ══════════════════════════════════════
+function startAura(cv,b,big){
+  const W=cv.width,H=cv.height,cx=W/2,cy=H/2;
+  const cols=AURA[b.block.a]||['#fff'];
+  const r=b.rarity,nP=r.pN,sp=r.sp*(big?1.5:1),range=big?H*.38:H*.28;
+  const pts=Array.from({length:nP},()=>{
+    const ang=Math.random()*Math.PI*2,dist=range*.5+Math.random()*range*.5;
+    return{x:cx+Math.cos(ang)*dist,y:cy+Math.sin(ang)*dist,
+      vx:(Math.random()-.5)*sp*.55,vy:(Math.random()-.5)*sp*.55,
+      pr:big?1.2+Math.random()*2.5:.8+Math.random()*1.8,
+      al:.3+Math.random()*.7,dA:.012+Math.random()*.022,
+      col:cols[Math.floor(Math.random()*cols.length)],
+      orb:Math.random()<.5,ang,dist,oS:(.003+Math.random()*.007)*(Math.random()<.5?1:-1)};
+  });
+  let run=true;const ctx=cv.getContext('2d');
+  (function frame(){
+    if(!run)return;
+    ctx.clearRect(0,0,W,H);
+    for(const p of pts){
+      if(p.orb){p.ang+=p.oS*sp;p.x=cx+Math.cos(p.ang)*p.dist;p.y=cy+Math.sin(p.ang)*p.dist;}
+      else{p.x+=p.vx;p.y+=p.vy;if(p.x<1||p.x>W-1)p.vx*=-1;if(p.y<1||p.y>H-1)p.vy*=-1;}
+      p.al+=p.dA;if(p.al>1||p.al<.05)p.dA*=-1;
+      const hex=Math.round(Math.max(0,Math.min(1,p.al))*220).toString(16).padStart(2,'0');
+      ctx.beginPath();ctx.arc(p.x,p.y,p.pr,0,Math.PI*2);ctx.fillStyle=p.col+hex;ctx.fill();
+      if(big&&r.score>=70){ctx.beginPath();ctx.arc(p.x,p.y,p.pr*2.6,0,Math.PI*2);ctx.fillStyle=p.col+'15';ctx.fill();}
+    }
+    requestAnimationFrame(frame);
+  })();
+  return()=>{run=false;};
+}
+function stopAllAuras(){for(const f of slotStops)f();slotStops=[];if(bestStop){bestStop();bestStop=null;}}
+
+// ══════════════════════════════════════
+// SPIN
+// ══════════════════════════════════════
+const SMSG={
+  common:'Block biasa… spin lagi!', uncommon:'Lumayan! Uncommon.',
+  rare:'✨ Rare! Bagus!', epic:'🔥 Epic!! Keren!',
+  legendary:'⭐ LEGENDARY!!!', mythic:'💫 MYTHIC!!!!',
+  divine:'💎 DIVINE!!!!!', eternal:'🌊 ETERNAL!!!!!!',
+  omega:'☠️ OMEGA!!!! MUSTAHIL!!!!!'
+};
+
+function getLuckTag(){
+  const lk=getTotalLuck();
+  if(G.isOwner&&G.ownerLuck999)return' 👑999×';
+  if(G.bonusLuck>=3)return' 🍀3×';
+  if(lk>1.5)return` 🍀${lk.toFixed(1)}×`;
+  return'';
+}
+
+function doSpin(){
+  const n=1+G.upg.doubleRoll;
+  const blocks=Array.from({length:n},makeBlock);
+  G.spins++;G.tokens++;
+  G.rares+=blocks.filter(b=>b.rarity.score>=20).length;
+  const win=blocks.reduce((a,c)=>blockScore(c)>blockScore(a)?c:a);
+  if(!G.bestBlock||blockScore(win)>blockScore(G.bestBlock)){G.bestBlock=win;renderBest(win);}
+  for(const f of slotStops)f();slotStops=[];
+  const area=document.getElementById('slotsArea');area.innerHTML='';
+  blocks.forEach((b,i)=>{
+    const isW=n===1||b===win;
+    const el=buildSlot(b,isW,i);area.appendChild(el);
+    const cv=el.querySelector('canvas');
+    if(cv)slotStops.push(startAura(cv,b,isW));
+  });
+  document.getElementById('logLine').textContent=(SMSG[win.rarity.id]||'Block!')+getLuckTag()+' +1 token';
+  refreshStats();refreshUpg();scheduleSave();
+}
+
+function buildSlot(b,isW,i){
+  const r=b.rarity,d=document.createElement('div');
+  d.className='slot'+(isW?' win':'');
+  d.style.cssText=`background:${r.bg};border-color:${isW?'#ffd700':r.bd};`+
+    `animation:${isW?'wpop .45s ease-out':'drop .33s ease-out'};animation-delay:${i*.05}s`;
+  const cv=document.createElement('canvas');cv.width=94;cv.height=94;d.appendChild(cv);
+  for(const[cls,txt]of[['si',b.block.i],['sn',b.block.n],['sr',r.name],['sv2','1:'+b.roll]]){
+    const s=document.createElement('span');s.className=cls;s.style.color=r.tc;s.textContent=txt;d.appendChild(s);
+  }
+  return d;
+}
+
+function renderBest(b){
+  const r=b.rarity;
+  document.getElementById('bibox').style.cssText=`background:${r.bg};border:2px solid ${r.bd}`;
+  document.getElementById('bicon').textContent=b.block.i;
+  document.getElementById('bname').textContent=b.block.n;document.getElementById('bname').style.color=r.tc;
+  document.getElementById('brar').textContent=r.name;document.getElementById('brar').style.color=r.tc;
+  document.getElementById('broll').textContent='Roll: 1:'+b.roll+' · Score: '+blockScore(b).toLocaleString();
+  if(bestStop){bestStop();bestStop=null;}
+  const cv=document.getElementById('bcv');cv.width=50;cv.height=50;
+  bestStop=startAura(cv,b,true);
+}
+
+function toggleAuto(){
+  G.autoOn=!G.autoOn;const btn=document.getElementById('autoBtn');
+  const ms=[1000,700,450,260][Math.min(G.upg.fastRoll,3)];
+  if(G.autoOn){btn.classList.add('aon');btn.textContent='⏹ Stop Auto';G.autoIv=setInterval(doSpin,ms);}
+  else{btn.classList.remove('aon');btn.textContent='⚡ Auto Spin';clearInterval(G.autoIv);}
+}
+function restartAuto(){
+  if(G.autoOn){
+    clearInterval(G.autoIv);
+    G.autoIv=setInterval(doSpin,[1000,700,450,260][Math.min(G.upg.fastRoll,3)]);
+  }
+}
+
+function buyUpg(id){
+  const def=UPG.find(u=>u.id===id),lv=G.upg[id];
+  if(lv>=def.max)return;const cost=def.costs[lv];if(G.tokens<cost)return;
+  G.tokens-=cost;G.upg[id]++;restartAuto();
+  document.getElementById('logLine').textContent=`Upgrade ${def.label} → Lv${G.upg[id]}! (-${cost} token)`;
+  refreshStats();refreshUpg();scheduleSave();
+}
+
+function refreshStats(){
+  document.getElementById('sTok').textContent=G.tokens;
+  document.getElementById('sSpin').textContent=G.spins;
+  document.getElementById('sRare').textContent=G.rares;
+  const lk=getTotalLuck();
+  const lkTxt=(G.isOwner&&G.ownerLuck999)?'999×':lk.toFixed(1)+'×';
+  document.getElementById('sLuck').textContent=lkTxt;
+  const isHighLuck=(G.isOwner&&G.ownerLuck999)||G.bonusLuck>=3||lk>2;
+  document.getElementById('scLuck').classList.toggle('luck-active',isHighLuck);
+  document.getElementById('sSlots').textContent=1+G.upg.doubleRoll;
+  document.getElementById('spLbl').textContent=['1×','1.4×','2.2×','3.8×'][Math.min(G.upg.fastRoll,3)];
+}
+
+function refreshUpg(){
+  const g=document.getElementById('ugrid');g.innerHTML='';
+  UPG.forEach(def=>{
+    const lv=G.upg[def.id],mx=lv>=def.max,cost=mx?0:def.costs[lv],can=!mx&&G.tokens>=cost;
+    const c=document.createElement('div');c.className='uc';
+    c.innerHTML=`<h4>${def.label}${lv>0?` <span style="color:var(--ok);font-size:9px">Lv${lv}/${def.max}</span>`:''}</h4>
+      <div class="ud">${mx?'✅ Maxed!':def.descs[lv]}</div>
+      <div class="ul">${mx?'Max level':`Biaya: ${cost} 🪙`}</div>
+      <button class="ubtn" ${mx||!can?'disabled':''} onclick="buyUpg('${def.id}')">
+        ${mx?'Maxed':can?`Upgrade (${cost})`:`Butuh ${cost} 🪙`}
+      </button>`;
+    g.appendChild(c);
+  });
+}
+
+// ══════════════════════════════════════
+// LEADERBOARD
+// ══════════════════════════════════════
+const MEDALS=['🥇','🥈','🥉','4️⃣','5️⃣'];
+async function loadLB(){
+  const c=document.getElementById('lbCont');
+  c.innerHTML='<div style="color:var(--muted);font-size:11px;text-align:center;padding:10px">Loading…</div>';
+  const{data,error}=await sb.from('players')
+    .select('username,best_block,best_score,spins').order('best_score',{ascending:false}).limit(5);
+  if(error||!data?.length){c.innerHTML='<div style="color:var(--muted);font-size:11px;text-align:center;padding:10px">Belum ada data</div>';return;}
+  c.innerHTML='';
+  data.forEach((row,i)=>{
+    const r=row.best_block?.rarity,b=row.best_block?.block;
+    const col=RCOLS[r?.id]||'#9090b0';
+    const d=document.createElement('div');d.className='lbrow';
+    d.innerHTML=`<div class="lbrank">${MEDALS[i]}</div>
+      <div class="lbname">${esc(row.username||'?')}</div>
+      <div class="lbblock" style="background:${col}18;color:${col};border:1px solid ${col}28">
+        ${b?.i||''} ${esc(b?.n||'—')} · ${esc(r?.name||'—')}
+      </div>
+      <div class="lbsc">${(row.best_score||0).toLocaleString()}</div>`;
+    c.appendChild(d);
+  });
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+</script>
+</body>
+</html>
