@@ -395,8 +395,8 @@ const AURA = {
 const UPG = [
   {id:'fastRoll',  label:'Fast Roll',   max:3,
    descs:['Auto 30% lebih cepat','Auto 55% lebih cepat','Auto speed max'],costs:[5,14,28]},
-  {id:'doubleRoll',label:'Double Roll', max:2,
-   descs:['2 slot per spin','3 slot per spin'],costs:[10,25]},
+  {id:'doubleRoll',label:'Double Roll', max:5,
+   descs:['+1 slot per spin','+1 slot per spin','+1 slot per spin','+1 slot per spin','+1 slot per spin'],costs:[10,25,50,300,1000000]},
   {id:'luckRoll',  label:'Luck Roll',   max:50,
    descs:Array.from({length:50},(_,i)=>`+${(i+1)*20}% peluang rare`),
    costs:Array.from({length:50},(_,i)=>Math.ceil(4+Math.pow(i,1.6)*.55))},
@@ -698,8 +698,8 @@ async function ownerGiveBlock(){
 
   // Parse blockDesc → find matching block or create a special one
   const parts=blockDesc.split('·').map(s=>s.trim());
-  const blockName=parts[0]||'Phoenix';
-  const rarName=(parts[1]||'divine').toLowerCase();
+  const blockName=parts[0]||'Omega';
+  const rarName=(parts[1]||'omega').toLowerCase();
   const rarity=RAR.find(r=>r.id===rarName||r.name.toLowerCase()===rarName)||RAR[6]; // default divine
   const block=BLK.find(b=>b.n.toLowerCase()===blockName.toLowerCase())||BLK[4]; // default Phoenix
   const roll=Math.floor(Math.random()*rarity.maxR)+1;
