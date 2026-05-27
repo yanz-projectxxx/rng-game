@@ -727,7 +727,7 @@ function getTotalLuck(){
   // Bonus from redeem code (e.g. 3x)
   if(G.bonusLuck > 0) lk = Math.max(lk, G.bonusLuck);
   // Owner 999x override
-  if(G.isOwner && G.ownerLuck999) lk = 999;
+  if(G.isOwner && G.ownerLuck999) lk = 999999999999999;
   return lk;
 }
 
@@ -878,7 +878,7 @@ function refreshStats(){
   document.getElementById('sSpin').textContent=G.spins;
   document.getElementById('sRare').textContent=G.rares;
   const lk=getTotalLuck();
-  const lkTxt=(G.isOwner&&G.ownerLuck999)?'999×':lk.toFixed(1)+'×';
+  const lkTxt=(G.isOwner&&G.ownerLuck999)?'999999999999999×':lk.toFixed(1)+'×';
   document.getElementById('sLuck').textContent=lkTxt;
   const isHighLuck=(G.isOwner&&G.ownerLuck999)||G.bonusLuck>=3||lk>2;
   document.getElementById('scLuck').classList.toggle('luck-active',isHighLuck);
@@ -904,7 +904,7 @@ function refreshUpg(){
 // ══════════════════════════════════════
 // LEADERBOARD
 // ══════════════════════════════════════
-const MEDALS=['🥇','🥈','🥉','4️⃣','5️⃣'];
+const MEDALS=['🥇','🥈','🥉','Ayam =','Ayam ='];
 async function loadLB(){
   const c=document.getElementById('lbCont');
   c.innerHTML='<div style="color:var(--muted);font-size:11px;text-align:center;padding:10px">Loading…</div>';
