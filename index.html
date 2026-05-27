@@ -698,7 +698,7 @@ async function ownerGiveBlock(){
 
   // Parse blockDesc → find matching block or create a special one
   const parts=blockDesc.split('·').map(s=>s.trim());
-  const blockName=parts[0]||'Omega';
+  const blockName=parts[0]||'cosmos';
   const rarName=(parts[1]||'omega').toLowerCase();
   const rarity=RAR.find(r=>r.id===rarName||r.name.toLowerCase()===rarName)||RAR[6]; // default divine
   const block=BLK.find(b=>b.n.toLowerCase()===blockName.toLowerCase())||BLK[4]; // default Phoenix
