@@ -367,7 +367,8 @@ const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 // ══════════════════════════
 const CODES = {
   'BETHEOWNER00':   { type:'owner',      desc:'👑 Owner Panel diaktifkan!', once:true },
-  'BETATESTING111': { type:'luck_boost', mult:3, desc:'🍀 Beta Luck 3× aktif! Luck dikali 3!', once:true },
+  'BETATESTING111': { type:'luck_boost', mult:3, desc:'🍀 Bonus Luck 3× aktif! Luck dikali 3!', once:true },
+  'EIDMUBARAK': { type:'luck_boost', mult:3, desc:'🍀 Bonus Luck 3× aktif!!', once:true },
 };
 
 // ══════════════════════════
@@ -913,7 +914,7 @@ function applyCode(raw,code){
     populateOwnerDropdowns();updateOwnerUI();
   } else if(code.type==='luck_boost'){
     G.betaLuckMult=code.mult;
-    document.getElementById('logLine').textContent='🍀 Beta Luck aktif! Luck dikali '+code.mult+'×';
+    document.getElementById('logLine').textContent='🍀 Bonus Luck aktif! Luck dikali '+code.mult+'×';
   }
 }
 
